@@ -9,7 +9,6 @@ packages = [
     { include = "langgraph_react_agent", from = "src" }
 ]
 
-
 [tool.poetry.dependencies]
 python = "^3.11"
 langchain-ibm = "^0.3.3"

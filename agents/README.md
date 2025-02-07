@@ -1,11 +1,22 @@
 # Agents
 
-Examples and guides for building and deploying agents using the watsonx APIs and SDKs.
+Templates for building and deploying agents using the watsonx APIs and SDKs.
 
-## Example agents
+## Official Templates
 
-- [`langgraph-arxiv-research`](./langgraph-arxiv-research/): Python/LangGraph agent to search and summarize research papers published on arXiv
-- [`langgraph-react-agent-base`](./langgraph-react-agent-base/): Python/LangGraph base agent
+These templates are official supported by IBM and follow the latest best practices.
+
+| Template                 | Description                                         |
+| ------------------------ | --------------------------------------------------- |
+| [Langraph](./langgraph/) | A simple ReAct agent that can be flexibly extended. |
+
+## Community Templates
+
+These templates are published by the community.
+
+| Template                                            | Framework | Description                                                       |
+| --------------------------------------------------- | --------- | ----------------------------------------------------------------- |
+| [arXiv Research Agent](./langgraph-arxiv-research/) | Langraph  | Agent to search and summarize research papers published on arXiv. |
 
 ## Support
 

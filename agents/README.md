@@ -5,6 +5,7 @@ Examples and guides for building and deploying agents using the watsonx APIs and
 ## Example agents
 
 - [`langgraph-arxiv-research`](./langgraph-arxiv-research/): Python/LangGraph agent to search and summarize research papers published on arXiv
+- [`langgraph-react-agent-base`](./langgraph-react-agent-base/): Python/LangGraph base agent
 
 ## Support
 

@@ -54,11 +54,11 @@ In order not to clone the whole `IBM/watsonx-developer-hub` repository we'll use
 ```sh
 git clone --no-tags --depth 1 --single-branch --filter=tree:0 --sparse git@github.com:IBM/watsonx-developer-hub.git
 cd watsonx-developer-hub
-git sparse-checkout add agents/langgraph
+git sparse-checkout add agents/langgraph-react-agent-base
 ```  
 
 > [!NOTE]
-> From now on it'll be considered that the working directory is `watsonx-developer-hub/agents/langraph/langgraph-react-agent-base`  
+> From now on it'll be considered that the working directory is `watsonx-developer-hub/agents/langgraph-react-agent-base`  
 
 
 ### Step 2: Install poetry  

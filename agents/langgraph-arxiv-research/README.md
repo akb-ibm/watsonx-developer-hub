@@ -1,4 +1,4 @@
-# Python/LangGraph agent to search and summarize research papers published on arXiv
+# arXiv Research Agent
 
 Table of contents:
 

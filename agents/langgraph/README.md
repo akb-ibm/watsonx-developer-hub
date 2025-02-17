@@ -58,7 +58,7 @@ git sparse-checkout add agents/langgraph
 ```  
 
 > [!NOTE]
-> From now on it'll be considered that the working directory is `watsonx-developer-hub/agents/langgraph-react-agent-base`  
+> From now on it'll be considered that the working directory is `watsonx-developer-hub/agents/langgraph`  
 
 
 ### Step 2: Install poetry  

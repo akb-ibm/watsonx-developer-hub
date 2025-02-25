@@ -25,9 +25,11 @@ The template builds a simple application with external tool for addressing Web S
 
 The high level structure of the repository is as follows:  
 
-langgraph-react-agent-base  
+langgraph  
  ┣ src  
- ┃ ┣ langgraph_react_agent_base  
+ ┃ ┗ langgraph_react_agent_base  
+ ┃   ┣ agent.py  
+ ┃   ┗ tools.py  
  ┣ schema  
  ┣ ai_service.py  
  ┣ config.toml  
@@ -52,7 +54,7 @@ langgraph-react-agent-base
 In order not to clone the whole `IBM/watsonx-developer-hub` repository we'll use git's shallow and sparse cloning feature to checkout only the template's directory:  
 
 ```sh
-git clone --no-tags --depth 1 --single-branch --filter=tree:0 --sparse git@github.com:IBM/watsonx-developer-hub.git
+git clone --no-tags --depth 1 --single-branch --filter=tree:0 --sparse https://github.com/IBM/watsonx-developer-hub.git
 cd watsonx-developer-hub
 git sparse-checkout add agents/langgraph
 ```  

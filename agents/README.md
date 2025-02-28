@@ -1,20 +1,20 @@
 # Agents
 
-Templates for building and deploying agents using the watsonx APIs and SDKs.
+A catalog of templates for building and deploying agents using [watsonx.ai](https://www.ibm.com/products/watsonx-ai).
 
 ## Official Templates
 
-These templates are official supported by IBM and follow the latest best practices.
+Designed to help you get started quickly with examples that can be easily customized and extended.
 
-| Template                 | Description                                         |
-| ------------------------ | --------------------------------------------------- |
-| [LangGraph](./langgraph/) | A simple agent built with LangGraph that can be flexibly extended. |
-| [LlamaIndex](./llamaindex/) | A simple agent built with LlamaIndex that can be flexibly extended. |
-| [CrewAI](./crewai/) | A simple agent built with CrewAI that can be flexibly extended. |
+| Template                 | 
+| ------------------------ |
+| [LangGraph](./langgraph/) |
+| [LlamaIndex](./llamaindex/) |
+| [CrewAI](./crewai/) |
 
 ## Community Templates
 
-These templates are published by the community.
+Templates published and maintained by the community.
 
 | Template                                            | Framework | Description                                                       |
 | --------------------------------------------------- | --------- | ----------------------------------------------------------------- |

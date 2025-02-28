@@ -10,7 +10,7 @@ These templates are official supported by IBM and follow the latest best practic
 | ------------------------ | --------------------------------------------------- |
 | [LangGraph](./langgraph/) | A simple web search agent built with LangGraph that can be flexibly extended. |
 | [LlamaIndex](./llamaindex/) | A simple web search agent built with LlamaIndex that can be flexibly extended. |
-| [CrewAI](./crewai/) | A simple web search agent built with LlamaIndex that can be flexibly extended. |
+| [CrewAI](./crewai/) | A simple web search agent built with CrewAI that can be flexibly extended. |
 
 ## Community Templates
 

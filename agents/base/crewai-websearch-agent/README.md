@@ -30,17 +30,17 @@ crewai-websearch-agent
  ┃ ┗ assistance_crew    
  ┃     ┣ config  
  ┃     ┣ tools  
- ┃     ┣ __init__.py  
+ ┃     ┣ \_\_init\_\_.py  
  ┃     ┗ crew.py  
  ┣ schema  
  ┣ ai_service.py  
- ┣ config.toml  
+ ┣ config.toml.example  
  ┗ pyproject.toml  
 
 - `assistance_crew` folder: Contains CrewAI agents configuration yaml files (`src/assistance_crew/config`) and auxiliary files used by the deployed function. These files provide various framework specific definitions and extensions. This folder is packaged and sent to IBM Cloud during deployment as a [package extension](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ml-create-custom-software-spec.html?context=wx&audience=wdp#custom-wml).  
 - `schema` folder: Contains request and response schemas for the `/ai_service` endpoint queries.  
 - `ai_service.py` file: Contains the function to be deployed as an AI service defining the application's logic  
-- `config.toml` file: A configuration file that stores the deployment metadata. It can also be used to tweak the model for your use case.  
+- `config.toml.example` file: A configuration file with placeholders that stores the deployment metadata. After downloading the template repository, copy the contents of the `config.toml.example` file to the `config.toml` file and fill in the required fields. `config.toml` file can also be used to tweak the model for your use case.
 
 ## Prerequisites  
 
@@ -58,17 +58,11 @@ In order not to clone the whole `IBM/watsonx-developer-hub` repository we'll use
 ```sh
 git clone --no-tags --depth 1 --single-branch --filter=tree:0 --sparse https://github.com/IBM/watsonx-developer-hub.git
 cd watsonx-developer-hub
-git sparse-checkout add agents/base/crewai-websearch-agent
+git sparse-checkout add agents/crewai
 ```  
 
-Move to the directory with the agent template:
-
-```sh
-cd agents/base/crewai-websearch-agent/
-```
-
 > [!NOTE]
-> From now on it'll be considered that the working directory is `watsonx-developer-hub/agents/base/crewai-websearch-agent`  
+> From now on it'll be considered that the working directory is `watsonx-developer-hub/agents/crewai`  
 
 
 ### Step 2: Install poetry  
@@ -82,7 +76,7 @@ pipx install --python 3.11 poetry
 Running the below commands will install the repository in a separate virtual environment  
 
 ```sh
-poetry install --with dev
+poetry install
 ```
 
 ### Step 4 (OPTIONAL): Activate the virtual environment  

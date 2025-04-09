@@ -38,7 +38,7 @@ watsonx-ai template invoke "Hello"
 3. **Deploy** the template
 
 ```bash
-watsonx-ai template new
+watsonx-ai service new
 ```
 
 ## Official Templates

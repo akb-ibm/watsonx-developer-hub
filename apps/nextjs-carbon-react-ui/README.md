@@ -18,13 +18,13 @@ as the base URL of that deployment.
 Before building, set the following variables in the `./.env` file ([docs](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#loading-environment-variables)):
 
 ```sh
-SPACE_ID=VALUE
-API_KEY=VALUE
-BASE_DEPLOYMENT_URL=ABSOLUTE_URL_FOR_THE_AI_SERVICE_DEPLOYMENT
+WATSONX_SPACE_ID=VALUE
+WATSONX_API_KEY=VALUE
+WATSONX_BASE_DEPLOYMENT_URL=ABSOLUTE_URL_FOR_THE_AI_SERVICE_DEPLOYMENT
 ```
 
-Note that the value of the **BASE_DEPLOYMENT_URL** needs to end with the deployment guid as we will be
-crafting multiple URLs based on that base. Example of **BASE_DEPLOYMENT_URL**:
+Note that the value of the **WATSONX_BASE_DEPLOYMENT_URL** needs to end with the deployment guid as we will be
+crafting multiple URLs based on that base. Example of **WATSONX_BASE_DEPLOYMENT_URL**:
 `https://us-south.ml.cloud.ibm.com/ml/v4/deployments/{deployment_id}`
 
 ## Building and running

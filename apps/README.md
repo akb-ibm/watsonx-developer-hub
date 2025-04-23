@@ -9,7 +9,8 @@ A catalog of apps that are designed to help users infer with deployed agents.
 
 ## Get started
 
-_Will soon be provided_
+At the moment the apps can be deployed manually following steps from each README.md file. Proceed by clicking on a choosen app in the table below.
+_Cli support will soon be provided_
 
 ## Official Apps
 

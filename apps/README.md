@@ -16,4 +16,4 @@ _Cli support will soon be provided_
 
 | Template                              | Framework | Description                                                  |
 | ------------------------------------- | --------- | ------------------------------------------------------------ |
-| [React UI](./nextjs-carbon-react-ui/) | Next.js   | App to infer with deployed agents providing a chat interface |
+| [React UI](./base/nextjs-chat-with-ai-service/) | Next.js   | App to infer with deployed agents providing a chat interface |

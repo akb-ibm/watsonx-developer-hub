@@ -64,7 +64,7 @@ Templates published and maintained by the community.
 
 ## Consuming deployed agents
 
-All of the available templates can be easily consumed in the [React UI App](../apps/base//nextjs-chat-with-ai-service/) that creates local running React application providing users an option to infer agents. To run the app local please follow these [steps](../apps/base/nextjs-chat-with-ai-service/README.md).
+All of the available templates can be easily consumed in the [React UI App](../apps/base/nextjs-chat-with-ai-service/) that creates local running React application providing users an option to infer agents. To run the app local please follow these [steps](../apps/base/nextjs-chat-with-ai-service/README.md).
 
 ## Support
 

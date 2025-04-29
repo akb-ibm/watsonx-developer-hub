@@ -111,7 +111,6 @@ def deployable_ai_service(context, url=None, model_id=None, thread_id=None):
         """
 
         client.set_token(context.get_token())
-
         payload = context.get_json()
         raw_messages = payload.get("messages", [])
         messages = [convert_dict_to_message(_dict) for _dict in raw_messages]
@@ -170,7 +169,6 @@ def deployable_ai_service(context, url=None, model_id=None, thread_id=None):
         is_assistant = headers.get("X-Ai-Interface") == "assistant"
 
         client.set_token(context.get_token())
-
         payload = context.get_json()
         raw_messages = payload.get("messages", [])
         messages = [convert_dict_to_message(_dict) for _dict in raw_messages]

@@ -179,5 +179,5 @@ The _deployment_id_ of your deployment can be obtained from [the previous sectio
 ### Step 2: Run the script for querying the deployment  
 
 ```sh
-python examples/execute_ai_service_locally.py
+python examples/query_existing_deployment.py
 ```   

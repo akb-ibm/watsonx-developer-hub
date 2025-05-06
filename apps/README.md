@@ -32,13 +32,13 @@ cd <app_name>
 cp template.env .env
 ```
 
-4. **Deploy** the app
+4. **Start** the app
 
 ```bash
 watsonx-ai app run
 ```
 
-4. **Run** app in development mode
+4. **Start** the app in development mode
 
 ```bash
 watsonx-ai app run --dev

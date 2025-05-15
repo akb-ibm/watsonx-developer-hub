@@ -20,9 +20,6 @@ def get_graph_closure(client: APIClient, model_id: str) -> Callable:
     def get_graph(system_prompt=default_system_prompt) -> CompiledGraph:
         """Get compiled graph with overwritten system prompt, if provided"""
         
-        # Initialise memory saver
-        memory = MemorySaver()
-        
         # Create instance of compiled graph
         return create_react_agent(
             chat, tools=TOOLS, state_modifier=system_prompt

@@ -1,4 +1,4 @@
-def deployable_ai_service(context, url=None, model_id=None, thread_id=None):
+def deployable_ai_service(context, url=None, model_id=None):
     import urllib
     from typing import Generator
 
@@ -130,12 +130,8 @@ def deployable_ai_service(context, url=None, model_id=None, thread_id=None):
         else:
             agent = graph()
 
-        config = {
-            "configurable": {"thread_id": thread_id}
-        }  # Checkpointer configuration
-
         # Invoke agent
-        generated_response = agent.invoke({"messages": messages}, config)
+        generated_response = agent.invoke({"messages": messages})
 
         choices = []
         execute_response = {

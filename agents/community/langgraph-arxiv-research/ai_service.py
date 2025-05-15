@@ -190,10 +190,8 @@ def deployable_ai_service(context, url=None, model_id=None, thread_id=None):
         else:
             agent = graph()
 
-        # Checkpointer configuration
-        config = {"configurable": {"thread_id": thread_id}}
         response_stream = agent.stream(
-            {"messages": messages}, config, stream_mode=["updates", "messages"]
+            {"messages": messages}, stream_mode=["updates", "messages"]
         )
 
         for chunk_type, data in response_stream:

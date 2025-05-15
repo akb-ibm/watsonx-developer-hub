@@ -10,7 +10,6 @@ from langgraph.graph.graph import CompiledGraph
 from langgraph.graph.message import add_messages
 
 from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.checkpoint.memory import MemorySaver
 
 from langchain import hub
 from langchain_core.output_parsers import StrOutputParser
@@ -37,9 +36,6 @@ def get_graph_closure(
         )
     ]
 
-    class State(TypedDict):
-        messages: list[BaseMessage]
-
     # Define system prompt
     default_system_prompt = (
         f"You are a helpful AI assistant, please respond to the user's query to the best of your ability!"
@@ -47,12 +43,17 @@ def get_graph_closure(
         f"Vector Store Index knowledge description: {base_knowledge_description or ''}"
     )
 
+    class AgentState(TypedDict):
+        # The add_messages function defines how an update should be processed
+        # Default is to replace. add_messages says "append"
+        messages: Annotated[Sequence[BaseMessage], add_messages]
+
     ### Nodes
 
     def agent_with_instruction(instruction_prompt: str | None) -> Callable:
         """System prompt will be updated by instruction prompt."""
 
-        def agent(state: State) -> dict:
+        def agent(state: AgentState) -> dict:
             """
             Invokes the agent model to generate a response based on the current state. Given
             the question, it will decide to retrieve using the retriever tool, or simply end.
@@ -74,9 +75,8 @@ def get_graph_closure(
             return {"messages": [response]}
 
         return agent
-    
 
-    def generate(state: State):
+    def generate(state: AgentState):
         """
         Generate answer
 
@@ -108,11 +108,6 @@ def get_graph_closure(
     def get_graph(instruction_prompt: SystemMessage | None = None) -> CompiledGraph:
         """Get compiled graph with overwritten system prompt, if provided"""
 
-        class AgentState(TypedDict):
-            # The add_messages function defines how an update should be processed
-            # Default is to replace. add_messages says "append"
-            messages: Annotated[Sequence[BaseMessage], add_messages]
-            
         # Define a new graph
         workflow = StateGraph(AgentState)
 
@@ -146,10 +141,8 @@ def get_graph_closure(
         workflow.add_edge("retrieve", "generate")
         workflow.add_edge("generate", END)
 
-        # Initialise memory saver
-        memory = MemorySaver()
         # Compile
-        graph = workflow.compile(checkpointer=memory)
+        graph = workflow.compile()
 
         return graph
 

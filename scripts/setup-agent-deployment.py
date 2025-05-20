@@ -41,5 +41,8 @@ config["deployment"]["watsonx_apikey"] = os.environ["WATSONX_API_KEY"]
 config["deployment"]["watsonx_url"] = os.environ["WATSONX_URL"]
 config["deployment"]["space_id"] = os.environ["WATSONX_SPACE_ID"]
 
+# TODO - consider changing sw_spec name with timestamp, as a temp solution set overwrite flag
+config["deployment"]["software_specification"]["overwrite"] = True
+
 with open(config_file, "w") as f:
     toml.dump(config, f)

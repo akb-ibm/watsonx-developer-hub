@@ -1,20 +1,13 @@
 import os
 import shutil
-import subprocess
-import sys
+from utils import install_package
 
-
-def install_package(package_name):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
 
 # Install CLI
 install_package("ibm-watsonx-ai-cli")
 
 # Install poetry required for deployment
 install_package("poetry")
-
-# Install unitxt for quality testing
-# install_package("unitxt")
 
 # Setup config.toml
 agent_workdir = os.environ["AGENT_WORKDIR"]

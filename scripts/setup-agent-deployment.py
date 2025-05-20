@@ -14,12 +14,15 @@ install_package("ibm-watsonx-ai-cli")
 # install_package("unitxt")
 
 # Setup config.toml
-config_file = "config.toml"
+agent_workdir = os.environ["AGENT_WORKDIR"]
+config_file = f"{agent_workdir}/config.toml"
 config_template = f"{config_file}.example"
 
 # Copy template
 if os.path.exists(config_template):
     shutil.copyfile(config_template, config_file)
+else:
+    raise FileNotFoundError(f"Configuration file {config_file} does not exist!")
 
 # Inject variables
 try:

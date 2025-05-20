@@ -1,0 +1,67 @@
+name: Test and deploy the agent
+
+on:
+  push:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: ${{ vars.PYTHON_VERSION }}
+  AGENT_WORKDIR: ${{ vars.AGENT_WORKDIR }}
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "🚀 Deploying to dev..."
+    - name: Checkout latest update
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    - name: Set up agent
+      env:
+        WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
+        WATSONX_URL: ${{ secrets.WATSONX_URL }}
+        WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID_DEV }}
+      run: python scripts/setup-agent-deployment.py
+
+    - run: cd "${AGENT_WORKDIR}"
+    - name: Deploy agent to dev space
+      run: watsonx-ai service new
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "🧪 Running tests..."
+    - name: Checkout latest update
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - run: cd "${AGENT_WORKDIR}"
+    - name: Test agent
+      run: pytest -r 'fEsxX' tests/
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "🚀 Deploying to prod..."
+    - name: Checkout latest update
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    - name: Set up agent
+      env:
+        WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
+        WATSONX_URL: ${{ secrets.WATSONX_URL }}
+        WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID_PROD }}
+      run: python scripts/setup-agent-deployment.py
+
+    - run: cd "${AGENT_WORKDIR}"
+    - name: Deploy agent to dev space
+      run: watsonx-ai service new

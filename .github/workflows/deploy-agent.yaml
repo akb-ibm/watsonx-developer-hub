@@ -26,9 +26,8 @@ jobs:
         WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID_DEV }}
       run: python scripts/setup-agent-deployment.py
 
-    - run: cd "${AGENT_WORKDIR}"
     - name: Deploy agent to dev space
-      run: watsonx-ai service new
+      run: cd "${AGENT_WORKDIR}" && watsonx-ai service new
 
   test:
     runs-on: ubuntu-latest\
@@ -42,9 +41,8 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - run: cd "${AGENT_WORKDIR}"
     - name: Test agent
-      run: pytest -r 'fEsxX' tests/
+      run: cd "${AGENT_WORKDIR}" && pytest -r 'fEsxX' tests/
 
   deploy:
     runs-on: ubuntu-latest
@@ -64,6 +62,5 @@ jobs:
         WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID_PROD }}
       run: python scripts/setup-agent-deployment.py
 
-    - run: cd "${AGENT_WORKDIR}"
     - name: Deploy agent to dev space
-      run: watsonx-ai service new
+      run: cd "${AGENT_WORKDIR}" && watsonx-ai service new

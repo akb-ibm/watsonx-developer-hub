@@ -48,7 +48,7 @@ jobs:
     - name: Set up quality test
       run: python scripts/setup-agent-test.py
     - name: Test the agent
-      run: cd "${AGENT_WORKDIR}" && poetry env activate && python -m pytest -r 'fEsxX' tests/
+      run: cd "${AGENT_WORKDIR}" && poetry run pytest -r 'fEsxX' tests/
 
   deploy-prod:
     runs-on: ubuntu-latest

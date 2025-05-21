@@ -29,7 +29,10 @@
                     ]
                 }
             },
-            "thread_id": "ID of conversation"
+            "thread_id": {
+                "title": "ID of conversation.",
+                "type": "string"
+            }
         },
         "required": [
             "messages"

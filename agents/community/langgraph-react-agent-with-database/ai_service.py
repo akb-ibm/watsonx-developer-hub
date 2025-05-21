@@ -2,7 +2,7 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
     import urllib
     from typing import Generator
     from langgraph.checkpoint.postgres import PostgresSaver
-    from langgraph_react_agent.agent import get_graph_closure
+    from langgraph_react_agent_database.agent import get_graph_closure
     from ibm_watsonx_ai import APIClient, Credentials
     from langchain_core.messages import (
         BaseMessage,
@@ -146,31 +146,36 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
         client.set_token(context.get_token())
         payload = context.get_json()
         raw_messages = payload.get("messages", [])
+        thread_id = payload.get("thread_id", "1234")
         messages = [convert_dict_to_message(_dict) for _dict in raw_messages]
+        DB_URI = generate_database_URI(client)
+        with PostgresSaver.from_conn_string(DB_URI) as saver:
+            saver.setup()
+            if messages and messages[0].type == "system":
+                agent = graph(saver, messages[0])
+                del messages[0]
+            else:
+                agent = graph(saver)
+            
+            user_messages = get_user_last_messages(messages)
+            config = {"configurable": {"thread_id": thread_id}}
+            # Invoke agent
+            generated_response = agent.invoke({"messages": user_messages}, config)
 
-        if messages and messages[0].type == "system":
-            agent = graph(messages[0])
-            del messages[0]
-        else:
-            agent = graph()
-
-        # Invoke agent
-        generated_response = agent.invoke({"messages": messages})
-
-        choices = []
-        execute_response = {
-            "headers": {"Content-Type": "application/json"},
-            "body": {"choices": choices},
-        }
-
-        choices.append(
-            {
-                "index": 0,
-                "message": get_formatted_message(generated_response["messages"][-1]),
+            choices = []
+            execute_response = {
+                "headers": {"Content-Type": "application/json"},
+                "body": {"choices": choices},
             }
-        )
 
-        return execute_response
+            choices.append(
+                {
+                    "index": 0,
+                    "message": get_formatted_message(generated_response["messages"][-1]),
+                }
+            )
+
+            return execute_response
     
     def generate_stream(context) -> Generator[dict, ..., ...]:
         """
@@ -200,7 +205,7 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
         client.set_token(context.get_token())
         payload = context.get_json()
         raw_messages = payload.get("messages", [])
-        thread_id = payload.get("thread_id", "3333")
+        thread_id = payload.get("thread_id", "1234")
         messages = [convert_dict_to_message(_dict) for _dict in raw_messages]
         try: 
             DB_URI = generate_database_URI(client)

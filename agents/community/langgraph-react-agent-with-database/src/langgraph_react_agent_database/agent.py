@@ -5,7 +5,7 @@ from langchain_ibm import ChatWatsonx
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import create_react_agent
 
-from langgraph_react_agent import TOOLS
+from langgraph_react_agent_database import TOOLS
 from langgraph.checkpoint.postgres import PostgresSaver
 
 def get_graph_closure(client: APIClient, model_id: str) -> Callable:

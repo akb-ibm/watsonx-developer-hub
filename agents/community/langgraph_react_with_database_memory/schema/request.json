@@ -29,7 +29,7 @@
                     ]
                 }
             },
-            "thread_id": {
+            "chat_session_id": {
                 "title": "ID of conversation.",
                 "type": "string"
             }

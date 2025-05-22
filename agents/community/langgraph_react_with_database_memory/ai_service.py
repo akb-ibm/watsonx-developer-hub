@@ -2,7 +2,7 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
     import urllib
     from typing import Generator
     from langgraph.checkpoint.postgres import PostgresSaver
-    from langgraph_react_agent_database.agent import get_graph_closure
+    from langgraph_react_with_database_memory.agent import get_graph_closure
     from ibm_watsonx_ai import APIClient, Credentials
     from langchain_core.messages import (
         BaseMessage,
@@ -25,8 +25,22 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
         space_id=context.get_space_id(),
     )
 
+    def generate_database_URI():
+        db_details = client.connections.get_details(connection_id)
+        db_credentials = db_details["entity"]["properties"]
+        db_host = db_credentials["host"]
+        db_port = db_credentials["port"]
+        db_name = db_credentials["database"] 
+        db_username = db_credentials["username"]
+        db_password = db_credentials["password"]
+        return f"postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}"
+    
+    DB_URI = generate_database_URI()
 
     graph = get_graph_closure(client, model_id)
+
+    with PostgresSaver.from_conn_string(DB_URI) as saver:
+        saver.setup()
 
     def get_formatted_message(
         resp: BaseMessage, is_assistant: bool = False
@@ -98,28 +112,6 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
         else:
             return HumanMessage(content=_dict["content"])
 
-    def get_user_last_messages(_list: list[BaseMessage]) -> list[BaseMessage]:
-        messages = deque()
-        found = False
-        for m in reversed(_list):
-            if isinstance(m, HumanMessage):
-                messages.appendleft(m)
-                found = True
-            else:
-                if found:
-                    break
-        return list(messages)
-
-    def generate_database_URI(client: APIClient):
-        db_details = client.connections.get_details(connection_id)
-        db_credentials = db_details["entity"]["properties"]
-        db_host = db_credentials["host"]
-        db_port = db_credentials["port"]
-        db_name = db_credentials["database"] 
-        db_username = db_credentials["username"]
-        db_password = db_credentials["password"]
-        return f"postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}"
-
     def generate(context) -> dict:
         """
         The `generate` function handles the REST call to the inference endpoint
@@ -146,21 +138,18 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
         client.set_token(context.get_token())
         payload = context.get_json()
         raw_messages = payload.get("messages", [])
-        thread_id = payload.get("thread_id")
+        chat_session_id = payload.get("chat_session_id")
         messages = [convert_dict_to_message(_dict) for _dict in raw_messages]
-        DB_URI = generate_database_URI(client)
         with PostgresSaver.from_conn_string(DB_URI) as saver:
-            saver.setup()
             if messages and messages[0].type == "system":
-                agent = graph(saver, thread_id, messages[0].content)
+                agent = graph(saver, chat_session_id, messages[0].content)
                 del messages[0]
             else:
-                agent = graph(saver, thread_id)
+                agent = graph(saver, chat_session_id)
             
-            if thread_id:
-                user_messages = get_user_last_messages(messages)
-                config = {"configurable": {"thread_id": thread_id}}
-                generated_response = agent.invoke({"messages": user_messages}, config)
+            if chat_session_id:
+                config = {"configurable": {"thread_id": chat_session_id}}
+                generated_response = agent.invoke({"messages": messages}, config)
             else:
                 generated_response = agent.invoke({"messages": messages})
 
@@ -207,22 +196,19 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
         client.set_token(context.get_token())
         payload = context.get_json()
         raw_messages = payload.get("messages", [])
-        thread_id = payload.get("thread_id")
+        chat_session_id = payload.get("chat_session_id")
         messages = [convert_dict_to_message(_dict) for _dict in raw_messages]
-        DB_URI = generate_database_URI(client)
         with PostgresSaver.from_conn_string(DB_URI) as saver:
-            saver.setup()
             if messages and messages[0].type == "system":
-                agent = graph(saver, thread_id, messages[0].content)
+                agent = graph(saver, chat_session_id, messages[0].content)
                 del messages[0]
             else:
-                agent = graph(saver, thread_id)
+                agent = graph(saver, chat_session_id)
             
-            if thread_id:
-                user_messages = get_user_last_messages(messages)
-                config = {"configurable": {"thread_id": thread_id}}
+            if chat_session_id:
+                config = {"configurable": {"thread_id": chat_session_id}}
                 response_stream = agent.stream(
-                    {"messages": user_messages}, config, stream_mode=["updates", "messages"]
+                    {"messages": messages}, config, stream_mode=["updates", "messages"]
                 )
             else:
                 response_stream = agent.stream(

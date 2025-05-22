@@ -1,4 +1,4 @@
-# A Base LangGraph LLM app template with function calling and persistent messages memory via dstabase  
+# A Base LangGraph LLM app template with function calling and persistent messages memory via database  
 
 Table of contents:  
 * [Introduction](#introduction)  

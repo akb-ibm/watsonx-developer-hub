@@ -165,7 +165,7 @@ Enter the necessary credentials in the `config.toml` file.
 watsonx-ai service new
 ```  
 
-Successfully completed command will print the URL to the deployed AI service to stdout and fill in the `deployment_id` in config.toml, which is necessary to test the deployment locally. For further info please refer [to the next section](#querying-the-deployment)  
+Successfully completed command will print both the URL of the deployed AI service and the `deployment_id` to stdout. The `deployment_id` is required for local testing. For further info please refer [to the next section](#querying-the-deployment)  
 
 ## Querying the deployment  
 

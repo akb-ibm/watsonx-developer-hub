@@ -146,21 +146,23 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
         client.set_token(context.get_token())
         payload = context.get_json()
         raw_messages = payload.get("messages", [])
-        thread_id = payload.get("thread_id", "1234")
+        thread_id = payload.get("thread_id")
         messages = [convert_dict_to_message(_dict) for _dict in raw_messages]
         DB_URI = generate_database_URI(client)
         with PostgresSaver.from_conn_string(DB_URI) as saver:
             saver.setup()
             if messages and messages[0].type == "system":
-                agent = graph(saver, messages[0])
+                agent = graph(saver, thread_id, messages[0].content)
                 del messages[0]
             else:
-                agent = graph(saver)
+                agent = graph(saver, thread_id)
             
-            user_messages = get_user_last_messages(messages)
-            config = {"configurable": {"thread_id": thread_id}}
-            # Invoke agent
-            generated_response = agent.invoke({"messages": user_messages}, config)
+            if thread_id:
+                user_messages = get_user_last_messages(messages)
+                config = {"configurable": {"thread_id": thread_id}}
+                generated_response = agent.invoke({"messages": user_messages}, config)
+            else:
+                generated_response = agent.invoke({"messages": messages})
 
             choices = []
             execute_response = {
@@ -189,12 +191,12 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
             "messages": [
                 {
                     "role": "system",
-                    "content": "You are a helpful assistant that uses tools to answer questions in detail.",
+                    "content": "You are a helpful assistant that uses tools to answer questions in detail."
                 },
                 {
                     "role": "user",
-                    "content": "Hello!",
-                },
+                    "content": "Hello!"
+                }
             ]
         }
         Please note that the `system message` MUST be placed first in the list of messages!
@@ -205,66 +207,59 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
         client.set_token(context.get_token())
         payload = context.get_json()
         raw_messages = payload.get("messages", [])
-        thread_id = payload.get("thread_id", "1234")
+        thread_id = payload.get("thread_id")
         messages = [convert_dict_to_message(_dict) for _dict in raw_messages]
-        try: 
-            DB_URI = generate_database_URI(client)
-            with PostgresSaver.from_conn_string(DB_URI) as saver:
-                saver.setup()
-                if messages and messages[0].type == "system":
-                    agent = graph(saver, messages[0])
-                    del messages[0]
-                else:
-                    agent = graph(saver)
-                
+        DB_URI = generate_database_URI(client)
+        with PostgresSaver.from_conn_string(DB_URI) as saver:
+            saver.setup()
+            if messages and messages[0].type == "system":
+                agent = graph(saver, thread_id, messages[0].content)
+                del messages[0]
+            else:
+                agent = graph(saver, thread_id)
+            
+            if thread_id:
                 user_messages = get_user_last_messages(messages)
                 config = {"configurable": {"thread_id": thread_id}}
                 response_stream = agent.stream(
                     {"messages": user_messages}, config, stream_mode=["updates", "messages"]
                 )
+            else:
+                response_stream = agent.stream(
+                    {"messages": messages}, stream_mode=["updates", "messages"]
+                )
 
-                for chunk_type, data in response_stream:
-                    if chunk_type == "messages":
-                        msg_obj = data[0]
-                        if msg_obj.type == "tool":
+            for chunk_type, data in response_stream:
+                if chunk_type == "messages":
+                    msg_obj = data[0]
+                    if msg_obj.type == "tool":
+                        continue
+                elif chunk_type == "updates":
+                    if agent := data.get("agent"):
+                        msg_obj = agent["messages"][0]
+                        if msg_obj.response_metadata.get("finish_reason") == "stop":
                             continue
-                    elif chunk_type == "updates":
-                        if agent := data.get("agent"):
-                            msg_obj = agent["messages"][0]
-                            if msg_obj.response_metadata.get("finish_reason") == "stop":
-                                continue
-                        elif tool := data.get("tools"):
-                            msg_obj = tool["messages"][0]
-                        else:
-                            continue
+                    elif tool := data.get("tools"):
+                        msg_obj = tool["messages"][0]
                     else:
                         continue
+                else:
+                    continue
 
-                    if (
-                        message := get_formatted_message(msg_obj, is_assistant=is_assistant)
-                    ) is not None:
-                        chunk_response = {
-                            "choices": [
-                                {
-                                    "index": 0,
-                                    "delta": message,
-                                    "finish_reason": msg_obj.response_metadata.get(
-                                        "finish_reason"
-                                    ),
-                                }
-                            ]
-                        }
-                        yield chunk_response
-        except Exception as e:
-            chunk_response = {
-                "choices": [
-                    {
-                        "index": 0,
-                        "delta": {"role": "assistant", "content": str(e)},
-                        "finish_reason": "error",
+                if (
+                    message := get_formatted_message(msg_obj, is_assistant=is_assistant)
+                ) is not None:
+                    chunk_response = {
+                        "choices": [
+                            {
+                                "index": 0,
+                                "delta": message,
+                                "finish_reason": msg_obj.response_metadata.get(
+                                    "finish_reason"
+                                ),
+                            }
+                        ]
                     }
-                ]
-            }
-            yield chunk_response
+                    yield chunk_response
 
     return generate, generate_stream

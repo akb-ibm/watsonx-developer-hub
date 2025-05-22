@@ -159,13 +159,13 @@ Follow these steps to deploy the model on IBM Cloud.
 
 Enter the necessary credentials in the `config.toml` file.  
 
-### Step 2: Run the deployment script  
+### Step 2: Deploy using the CLI  
 
 ```sh
-python scripts/deploy.py
+watsonx-ai service new
 ```  
 
-Successfully completed script will print on stdout the `deployment_id` which is necessary to locally test the deployment. For further info please refer [to the next section](#querying-the-deployment)  
+Successfully completed command will print the URL to the deployed AI service to stdout and fill in the `deployment_id` in config.toml, which is necessary to test the deployment locally. For further info please refer [to the next section](#querying-the-deployment)  
 
 ## Querying the deployment  
 
@@ -174,7 +174,7 @@ Follow these steps to inference your deployment. The [query_existing_deployment.
 ### Step 1: Initialize the deployment ID  
 
 Initialize the `deployment_id` variable in the [query_existing_deployment.py](examples/query_existing_deployment.py) file.  
-The _deployment_id_ of your deployment can be obtained from [the previous section](#deploying-on-ibm-cloud) by running [scripts/deploy.sh](scripts/deploy.py)  
+The _deployment_id_ of your deployment can be obtained from [the previous section](#deploying-on-ibm-cloud).
 
 ### Step 2: Run the script for querying the deployment  
 

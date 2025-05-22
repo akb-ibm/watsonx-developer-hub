@@ -129,7 +129,7 @@ For exemplary purposes only the tools and some general utility functions are cov
 
 Running the below command will run the complete tests suite:
 ```sh
-pytest -r 'fEsxX' tests/
+poetry run pytest -r 'fEsxX' tests/
 ```  
 
 ## Running the application locally  

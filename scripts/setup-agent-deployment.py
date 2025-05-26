@@ -20,15 +20,10 @@ if os.path.exists(config_template):
 else:
     raise FileNotFoundError(f"Configuration file {config_file} does not exist!")
 
-# Inject variables
-try:
-    import toml
-except ImportError:
-    install_package("toml")
-    import toml
+from tomlkit import parse, dumps
 
 with open(config_file, "r") as f:
-    config = toml.load(f)
+    config = parse(f.read())
 
 config["deployment"]["watsonx_apikey"] = os.environ["WATSONX_API_KEY"]
 config["deployment"]["watsonx_url"] = os.environ["WATSONX_URL"]
@@ -38,4 +33,4 @@ config["deployment"]["space_id"] = os.environ["WATSONX_SPACE_ID"]
 config["deployment"]["software_specification"]["overwrite"] = True
 
 with open(config_file, "w") as f:
-    toml.dump(config, f)
+    f.write(dumps(config))

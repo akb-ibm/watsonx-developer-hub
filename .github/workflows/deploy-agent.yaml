@@ -9,8 +9,40 @@ env:
   AGENT_WORKDIR: ${{ vars.AGENT_WORKDIR }}
 
 jobs:
+  test-tools:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout latest update
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Set up tools test
+      run: python scripts/setup-tools-test.py
+    - name: Test the tools
+      run: cd "${AGENT_WORKDIR}" && poetry run pytest -r 'fEsxX' tests/
+
+  invoke-local:
+    runs-on: ubuntu-latest
+    needs: test-tools
+    steps:
+    - name: Checkout latest update
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install poetry and IBM watsonx.ai CLI
+      run: python -m pip install poetry ibm-watsonx-ai-cli
+    - name: Invoke agent template
+      run: cd "${AGENT_WORKDIR}" && watsonx-ai template invoke "Hello"
+
   deploy-dev:
     runs-on: ubuntu-latest
+    needs: [test-tools, invoke-local]
     outputs:
       deployment_id: ${{ steps.deploy.outputs.deployment_id }}
     steps:
@@ -21,7 +53,7 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Set up agent
+    - name: Set up deployment config
       env:
         WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
         WATSONX_URL: ${{ secrets.WATSONX_URL }}
@@ -31,7 +63,7 @@ jobs:
       id: deploy
       run: cd "${AGENT_WORKDIR}" && watsonx-ai service new | grep -o "deployment_id='[^']*'" >> "$GITHUB_OUTPUT"
 
-  test:
+  invoke-dev:
     runs-on: ubuntu-latest
     needs: deploy-dev
     steps:
@@ -42,30 +74,12 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - env:
-        DEPLOYMENT_ID: ${{ needs.deploy-dev.outputs.deployment_id }}
-      run: echo "${DEPLOYMENT_ID}"
-    - name: Set up quality test
-      run: python scripts/setup-agent-test.py
-    - name: Test the agent
-      run: cd "${AGENT_WORKDIR}" && poetry run pytest -r 'fEsxX' tests/
-
-  deploy-prod:
-    runs-on: ubuntu-latest
-    needs: [deploy-dev, test]
-    steps:
-    - name: Checkout latest update
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Set up agent
+    - name: Set up deployment config
       env:
         WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
         WATSONX_URL: ${{ secrets.WATSONX_URL }}
-        WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID_PROD }}
+        WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID_DEV }}
+        DEPLOYMENT_ID: ${{ needs.deploy-dev.outputs.deployment_id }}
       run: python scripts/setup-agent-deployment.py
-    - name: Deploy agent to dev space
-      run: cd "${AGENT_WORKDIR}" && watsonx-ai service new
+    - name: Invoke agent deployment
+      run: cd "${AGENT_WORKDIR}" && watsonx-ai service invoke "Hello"

@@ -2,7 +2,10 @@ import os
 import subprocess
 from utils import install_package
 
-# Install poetry required for deployment
+# Install CLI
+install_package("ibm-watsonx-ai-cli")
+
+# Install poetry required for invoke
 install_package("poetry")
 
 # Install the template with poetry

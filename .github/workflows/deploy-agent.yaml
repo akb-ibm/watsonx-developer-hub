@@ -19,8 +19,8 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Set up tools test
-      run: python scripts/setup-tools-test.py
+    - name: Set up template test
+      run: python scripts/setup-template-test.py
     - name: Test the tools
       run: cd "${AGENT_WORKDIR}" && poetry run pytest -r 'fEsxX' tests/
 
@@ -35,8 +35,8 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Install poetry and IBM watsonx.ai CLI
-      run: python -m pip install poetry ibm-watsonx-ai-cli
+    - name: Set up template invoke
+      run: python scripts/setup-template-test.py
     - name: Invoke agent template
       run: cd "${AGENT_WORKDIR}" && watsonx-ai template invoke "Hello"
 

@@ -38,7 +38,7 @@ jobs:
     - name: Set up template invoke
       run: python scripts/setup-template-test.py
     - name: Invoke agent template
-      run: cd "${AGENT_WORKDIR}" && watsonx-ai template invoke "Hello"
+      run: cd "${AGENT_WORKDIR}" && poetry run watsonx-ai template invoke "Hello"
 
   deploy-dev:
     runs-on: ubuntu-latest

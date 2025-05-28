@@ -6,7 +6,7 @@
   # Path to json file with a complete payload that will be send to proper AI service generate function.
   # Note that, the payload file will be only used when no `query` is provided when running `invoke ` command
   # Default: None
-  payload_path = ""
+  payload_path = "example_payload.json"
 
 [deployment]
   # One of the below is required.

@@ -147,14 +147,14 @@ Example payload:
         "messages": [
                 {
                     "role": "system",
-                    "content": "You are a helpful assistant that uses tools to answer questions in detail.",
+                    "content": "You are a helpful assistant that uses tools to answer questions in detail."
                 },
                 {
                     "role": "user",
-                    "content": "Hello!",
-                },
+                    "content": "Hello!"
+                }
         ],
-        "thread_id": "1234"
+        "thread_id": "814b39f8-4bb0-4d5b-ac1f-375e1fb0c1a6"
 }
 ```
 ### Step 2: Run command

@@ -17,7 +17,7 @@ def get_graph_closure(client: APIClient, model_id: str) -> Callable:
     # Define system prompt
     default_system_prompt = "You are a helpful AI assistant, please respond to the user's query to the best of your ability!"
 
-    def get_graph(memory: PostgresSaver, chat_session_id=None, system_prompt=default_system_prompt, max_messages_in_context=10) -> CompiledGraph:
+    def get_graph(memory: PostgresSaver, thread_id=None, system_prompt=default_system_prompt, max_messages_in_context=10) -> CompiledGraph:
         """Get compiled graph with overwritten system prompt, if provided"""
         
         def messages_modifier(messages_from_history: list[BaseMessage]) -> list[BaseMessage]:
@@ -36,7 +36,7 @@ def get_graph_closure(client: APIClient, model_id: str) -> Callable:
                     return [input_messages[0]] + input_messages[-(max_messages_in_context - 1):]
             return input_messages
         
-        if chat_session_id:
+        if thread_id:
             return create_react_agent(chat, tools=TOOLS, checkpointer=memory, messages_modifier=messages_modifier) 
         else:
             return create_react_agent(chat, tools=TOOLS, state_modifier=system_prompt) 

@@ -138,17 +138,17 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
         client.set_token(context.get_token())
         payload = context.get_json()
         raw_messages = payload.get("messages", [])
-        chat_session_id = payload.get("chat_session_id")
+        thread_id = payload.get("thread_id")
         messages = [convert_dict_to_message(_dict) for _dict in raw_messages]
         with PostgresSaver.from_conn_string(DB_URI) as saver:
             if messages and messages[0].type == "system":
-                agent = graph(saver, chat_session_id, messages[0].content)
+                agent = graph(saver, thread_id, messages[0].content)
                 del messages[0]
             else:
-                agent = graph(saver, chat_session_id)
+                agent = graph(saver, thread_id)
             
-            if chat_session_id:
-                config = {"configurable": {"thread_id": chat_session_id}}
+            if thread_id:
+                config = {"configurable": {"thread_id": thread_id}}
                 generated_response = agent.invoke({"messages": messages}, config)
             else:
                 generated_response = agent.invoke({"messages": messages})
@@ -196,17 +196,17 @@ def deployable_ai_service(context, url=None, model_id=None, connection_id=None):
         client.set_token(context.get_token())
         payload = context.get_json()
         raw_messages = payload.get("messages", [])
-        chat_session_id = payload.get("chat_session_id")
+        thread_id = payload.get("thread_id")
         messages = [convert_dict_to_message(_dict) for _dict in raw_messages]
         with PostgresSaver.from_conn_string(DB_URI) as saver:
             if messages and messages[0].type == "system":
-                agent = graph(saver, chat_session_id, messages[0].content)
+                agent = graph(saver, thread_id, messages[0].content)
                 del messages[0]
             else:
-                agent = graph(saver, chat_session_id)
+                agent = graph(saver, thread_id)
             
-            if chat_session_id:
-                config = {"configurable": {"thread_id": chat_session_id}}
+            if thread_id:
+                config = {"configurable": {"thread_id": thread_id}}
                 response_stream = agent.stream(
                     {"messages": messages}, config, stream_mode=["updates", "messages"]
                 )

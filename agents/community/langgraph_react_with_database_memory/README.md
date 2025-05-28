@@ -132,7 +132,46 @@ Running the below command will run the complete tests suite:
 poetry run pytest -r 'fEsxX' tests/
 ```  
 
-## Running the application locally  
+## Running the application locally using `watsonx-ai` CLI
+
+You can run the AI service locally using the watsonx-ai CLI. However, it still requires a connection to IBM Cloud.
+
+### Step 1: Fill in the `config` file  
+
+Enter the necessary credentials in the `config.toml` file.
+If you want to use your own payload, prepare it in a separate JSON file and specify the path to this file in the `payload_path` field.
+
+Example payload:
+```json
+{
+        "messages": [
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant that uses tools to answer questions in detail.",
+                },
+                {
+                    "role": "user",
+                    "content": "Hello!",
+                },
+        ],
+        "thread_id": "1234"
+}
+```
+### Step 2: Run command
+If you have your own payload:
+
+```sh
+watsonx-ai template invoke
+```  
+
+If you do not have a payload:
+
+```sh
+watsonx-ai template invoke "<your query>"
+```
+
+
+## Running the application locally using script
 
 It is possible to run (or even debug) the ai-service locally, however it still requires creating the connection to the IBM Cloud.  
 
@@ -167,7 +206,28 @@ watsonx-ai service new
 
 Successfully completed command will print both the URL of the deployed AI service and the `deployment_id` to stdout. The `deployment_id` is required for local testing. For further info please refer [to the next section](#querying-the-deployment)  
 
-## Querying the deployment  
+## Querying the deployment using `watsonx-ai` CLI
+
+### Step 1: Fill in the config file
+Enter the necessary credentials (especially `deployment_id`) in the config.toml file. If you want to use your own payload, prepare the same as [here](#step-1-fill-in-the-config-file)
+
+
+### Step 2: Run command 
+
+If you have your own payload:
+
+```sh
+watsonx-ai service invoke
+```  
+
+If you do not have a payload:
+
+```sh
+watsonx-ai service invoke "<your query>"
+``` 
+
+
+## Querying the deployment using script
 
 Follow these steps to inference your deployment. The [query_existing_deployment.py](examples/query_existing_deployment.py) file shows how to test the existing deployment using `watsonx.ai` library.  
 

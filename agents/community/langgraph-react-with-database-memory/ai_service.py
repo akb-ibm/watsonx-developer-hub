@@ -1,6 +1,5 @@
 def deployable_ai_service(context, url=None, model_id=None, postgres_db_conenction_id=None):
     import urllib
-    from utils import generate_database_URI
     from typing import Generator
     from langgraph.checkpoint.postgres import PostgresSaver
     from langgraph_react_with_database_memory.agent import get_graph_closure
@@ -24,8 +23,18 @@ def deployable_ai_service(context, url=None, model_id=None, postgres_db_conencti
         ),
         space_id=context.get_space_id(),
     )
+
+    def generate_database_URI():
+        db_details = client.connections.get_details(postgres_db_conenction_id)
+        db_credentials = db_details["entity"]["properties"]
+        db_host = db_credentials["host"]
+        db_port = db_credentials["port"]
+        db_name = db_credentials["database"] 
+        db_username = db_credentials["username"]
+        db_password = db_credentials["password"]
+        return f"postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}"
     
-    DB_URI = generate_database_URI(client, postgres_db_conenction_id)
+    DB_URI = generate_database_URI()
 
     graph = get_graph_closure(client, model_id)
 

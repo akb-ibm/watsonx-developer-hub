@@ -10,7 +10,6 @@ def deployable_ai_service(context, url=None, model_id=None, postgres_db_conencti
         AIMessage,
         SystemMessage,
     )
-    from collections import deque
 
     hostname = urllib.parse.urlparse(url).hostname or ""
     is_cloud_url = hostname.lower().endswith("cloud.ibm.com")

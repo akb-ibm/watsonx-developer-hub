@@ -14,7 +14,7 @@ Table of contents:
 
 ## Introduction  
 
-This repository provides a basic template for LLM apps built using LangGraph framework and database-backed memory for message storage . It also makes it easy to deploy them as an AI service as part of IBM watsonx.ai for IBM Cloud[^1].  
+This repository provides the template for LLM apps built using LangGraph framework and database-backed memory for message storage. Specifically, the template demonstrates usage of Postgres database as a storage for short-term memory. For more information about LangGrpah Persistence concept, please see [LangGraph documentation](https://langchain-ai.github.io/langgraph/concepts/persistence/). It also makes it easy to deploy them as an AI service as part of IBM watsonx.ai for IBM Cloud[^1].  
 An AI service is a deployable unit of code that captures the logic of your generative AI use case. For and in-depth description of the topic please refer to the [IBM watsonx.ai documentation](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ai-services-templates.html?context=wx&audience=wdp).  
 
 [^1]: _IBM watsonx.ai for IBM Cloud_ is a full and proper name of the component we're using in this template and only a part of the whole suite of products offered in the SaaS model within IBM Cloud environment. Throughout this README, for the sake of simplicity, we'll be calling it just an **IBM Cloud**.  
@@ -36,7 +36,7 @@ langgraph-react-agent
  ┣ pyproject.toml  
 
 - `langgraph_react_with_database_memory` folder: Contains auxiliary files used by the deployed function. They provide various framework specific definitions and extensions. This folder is packaged and sent to IBM Cloud during deployment as a [package extension](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ml-create-custom-software-spec.html?context=wx&audience=wdp#custom-wml).  
-- `schema` folder: Contains request and response schemas for the `/ai_service` endpoint queries.  
+- `schema` folder: Contains request and response schemas for the `/ai_service` endpoint queries. Compared to the other templates, a new field `thread_id` has been added to `request.json`. When sending a request to the model, this field should be populated with the ID of the conversation thread. If the `thread_id` is not provided, only the content of the `messages` field will be passed to the model.  
 - `ai_service.py` file: Contains the function to be deployed as an AI service defining the application's logic  
 - `config.toml.example` file: A configuration file with placeholders that stores the deployment metadata. After downloading the template repository, copy the contents of the `config.toml.example` file to the `config.toml` file and fill in the required fields. `config.toml` file can also be used to tweak the model for your use case. 
 
@@ -66,7 +66,7 @@ cd agents/base/langgraph-react-agent/
 ```
 
 > [!NOTE]
-> From now on it'll be considered that the working directory is `watsonx-developer-hub/agents/base/langgraph-react-agent/`  
+> From now on it'll be considered that the working directory is `watsonx-developer-hub/agents/community/langgraph-react-with-database-memory/`  
 
 
 ### Step 2: Install poetry  

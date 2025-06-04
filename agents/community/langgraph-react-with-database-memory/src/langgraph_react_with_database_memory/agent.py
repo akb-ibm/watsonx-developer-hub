@@ -17,7 +17,9 @@ def get_graph_closure(client: APIClient, model_id: str) -> Callable:
     # Define system prompt
     default_system_prompt = "You are a helpful AI assistant, please respond to the user's query to the best of your ability!"
 
-    def get_graph(memory: PostgresSaver, thread_id=None, system_prompt=default_system_prompt, max_messages_in_context=10) -> CompiledGraph:
+    max_messages_in_context=50
+
+    def get_graph(memory: PostgresSaver, thread_id=None, system_prompt=default_system_prompt) -> CompiledGraph:
         """Get compiled graph with overwritten system prompt, if provided"""
         
         def messages_modifier(messages_from_history: list[BaseMessage]) -> list[BaseMessage]:

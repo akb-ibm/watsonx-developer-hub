@@ -17,8 +17,10 @@
 
 ## 🤔 Introduction  
 
-This repository provides the template for LLM apps built using LangGraph framework and database-backed memory for message storage. Specifically, the template demonstrates usage of Postgres database as a storage for short-term memory. For more information about LangGrpah Persistence concept, please see [LangGraph documentation](https://langchain-ai.github.io/langgraph/concepts/persistence/). It also makes it easy to deploy them as an AI service as part of IBM watsonx.ai for IBM Cloud[^1].  
+This repository provides the template for LLM apps built using LangGraph framework and database-backed memory for message storage. Specifically, the template demonstrates usage of Postgres database as a storage for short-term memory. By default, when using a conversation `thread_id`, the agent includes the context of the last 50 messages. This behavior can be modified by adjusting the `max_messages_in_context` variable in the `src/langgraph_react_with_database_memory/agent.py` file. For more information about LangGrpah Persistence concept, please see [LangGraph documentation](https://langchain-ai.github.io/langgraph/concepts/persistence/). It also makes it easy to deploy them as an AI service as part of IBM watsonx.ai for IBM Cloud[^1].  
 An AI service is a deployable unit of code that captures the logic of your generative AI use case. For and in-depth description of the topic please refer to the [IBM watsonx.ai documentation](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ai-services-templates.html?context=wx&audience=wdp).  
+
+
 
 [^1]: _IBM watsonx.ai for IBM Cloud_ is a full and proper name of the component we're using in this template and only a part of the whole suite of products offered in the SaaS model within IBM Cloud environment. Throughout this README, for the sake of simplicity, we'll be calling it just an **IBM Cloud**.  
 

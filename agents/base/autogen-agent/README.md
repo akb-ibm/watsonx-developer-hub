@@ -11,6 +11,7 @@
 * [Running the application locally](#-running-the-application-locally)  
 * [Deploying on IBM Cloud](#%EF%B8%8F-deploying-on-ibm-cloud)  
 * [Querying the deployment](#-querying-the-deployment)  
+* [Running the graphical app locally](#%EF%B8%8F-running-the-graphical-app-locally) 
 * [Cloning template (Optional)](#-cloning-template-optional)    
 
 ## 🤔 Introduction

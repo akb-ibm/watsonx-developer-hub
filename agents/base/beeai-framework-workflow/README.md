@@ -221,40 +221,42 @@ Follow these steps to inference your deployment. The [query_existing_deployment.
 > [!WARNING]  
 > This flow is deprecated and will be removed in a future release. Please migrate to recommended flow as soon as possible.
 
-## Running the Graphical App Locally
+## 🖥️ Running the graphical app locally
 
-### 1. Download the app
+You can also run the graphical application locally using the deployed model. All you need to do is deploy the model and follow the steps below. Detailed information for each app is available in its README file.
 
-```bash
-watsonx-ai app new
-```
+1. **Download the app**:
 
-### 2. Configure the app
+   ```bash
+   watsonx-ai app new
+   ```
 
-Go to the [Developer Access](https://dataplatform.cloud.ibm.com/developer-access) to find your environment variables also retrieve deployment url/deployment_id for deployed template from the link provided afer deployment.
-Note that the value of the **WATSONX_BASE_DEPLOYMENT_URL** needs to end with the deployment guid as we will be
-crafting multiple URLs based on that base.
-Example of **WATSONX_BASE_DEPLOYMENT_URL**:
-`https://us-south.ml.cloud.ibm.com/ml/v4/deployments/{deployment_id}`
+2. **Configure the app**:
+
+   All required variables are defined in the config.toml file.
+   Here is an example of how to create the **WATSONX_BASE_DEPLOYMENT_URL**:
+   `https://{REGION}.ml.cloud.ibm.com/ml/v4/deployments/{deployment_id}`
 
 
-```bash
-cd <app_name>
-cp template.env .env
-```
+   ```bash
+   cd <app_name>
+   cp template.env .env
+   ```
 
-### 3. Start the app
+3. **Start the app**:
 
-```bash
-watsonx-ai app run
-```
+   ```bash
+   watsonx-ai app run
+   ```
 
-### 3. Start the app in development mode
+3. **Start the app in development mode**:
 
-```bash
-watsonx-ai app run --dev
-```
-This soultion allows user to make changes to the source code while the app is running. Each time changes are saved the app reloads and is working with provided changes.
+   ```bash
+   watsonx-ai app run --dev
+   ```
+
+   This soultion allows user to make changes to the source code while the app is running. Each time changes are saved the app reloads and is working with provided changes.
+
 
 ---
 

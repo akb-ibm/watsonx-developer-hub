@@ -11,13 +11,14 @@
 * [Running the application locally](#-running-the-application-locally)  
 * [Deploying on IBM Cloud](#%EF%B8%8F-deploying-on-ibm-cloud)  
 * [Querying the deployment](#-querying-the-deployment)  
+* [Deleting a conversation by thread ID](#-deleting-a-conversation-by-thread-ID)
 * [Running the graphical app locally](#%EF%B8%8F-running-the-graphical-app-locally) 
 * [Cloning template (Optional)](#-cloning-template-optional)    
 
 
 ## 🤔 Introduction  
 
-This repository provides the template for LLM apps built using LangGraph framework and database-backed memory for message storage. Specifically, the template demonstrates usage of Postgres database as a storage for short-term memory. By default, when using a conversation `thread_id`, the agent includes the context of the last 50 messages. This behavior can be modified by adjusting the `max_messages_in_context` variable in the `src/langgraph_react_with_database_memory/agent.py` file. For more information about LangGrpah Persistence concept, please see [LangGraph documentation](https://langchain-ai.github.io/langgraph/concepts/persistence/). It also makes it easy to deploy them as an AI service as part of IBM watsonx.ai for IBM Cloud[^1].  
+This repository provides the template for LLM apps built using LangGraph framework and database-backed memory for message storage. Specifically, the template demonstrates usage of Postgres database as a storage for short-term memory. By default, when using a conversation `thread_id`, the agent includes the context of the last 50 messages. This behavior can be modified by adjusting the `max_messages_in_context` variable in the [agent.py](src/langgraph_react_with_database_memory/agent.py) file. For more information about LangGrpah Persistence concept, please see [LangGraph documentation](https://langchain-ai.github.io/langgraph/concepts/persistence/). It also makes it easy to deploy them as an AI service as part of IBM watsonx.ai for IBM Cloud[^1].  
 An AI service is a deployable unit of code that captures the logic of your generative AI use case. For and in-depth description of the topic please refer to the [IBM watsonx.ai documentation](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ai-services-templates.html?context=wx&audience=wdp).  
 
 
@@ -193,7 +194,7 @@ watsonx-ai template invoke "<PROMPT>"
 1. **Run Python Script**:
 
    ```sh
-   python examples/execute_ai_service_locally.py
+   poetry run python examples/execute_ai_service_locally.py
    ```
 
 2. **Ask the model**:
@@ -258,11 +259,28 @@ Follow these steps to inference your deployment. The [query_existing_deployment.
 2. **Run the script for querying the deployment**:
 
    ```sh
-   python examples/query_existing_deployment.py
+   poetry run python examples/query_existing_deployment.py
    ```
+   When you run this command, a new conversation session is created and associated with a unique thread_id generated using a UUID. This ID identifies the session and all its stored messages. The thread_id is also printed to the console. If want, you can delete this conversation at any time - more informations you can find in [deleting a conversation by thread ID](#-deleting-a-conversation-by-thread-ID) section.
 
 > [!WARNING]  
 > This flow is deprecated and will be removed in a future release. Please migrate to recommended flow as soon as possible.
+
+## 🗑 Deleting a conversation by thread ID
+You can permanently remove the conversation associated with a specific thread.
+
+1. **Initialize the thread ID**:
+
+    Initialize the `thread_id` variable in the [clear_thread_history.py](examples/clear_thread_history.py) file.  
+    
+2. **Run the script for deleting the conversation**:
+
+   ```sh
+   poetry run python examples/clear_thread_history.py
+   ```
+
+> [!WARNING]  
+> This action is **irreversible** and will permanently delete all data related to the thread.
 
 ## 🖥️ Running the graphical app locally
 

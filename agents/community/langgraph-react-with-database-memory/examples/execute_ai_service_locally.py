@@ -4,6 +4,7 @@ from ibm_watsonx_ai.deployments import RuntimeContext
 from ai_service import deployable_ai_service
 from utils import load_config
 from examples._interactive_chat import InteractiveChat
+import uuid
 
 stream = True
 config = load_config()
@@ -20,7 +21,11 @@ client = APIClient(
 context = RuntimeContext(api_client=client)
 ai_service_resp_func = deployable_ai_service(context=context, **online_parameters)[stream]
 
+myuuid = str(uuid.uuid4())
+print(f"### thread_id: {myuuid} ###")
+
 def ai_service_invoke(payload):
+    payload["thread_id"] = myuuid
     context.request_payload_json = payload
     return ai_service_resp_func(context)
 

@@ -14,26 +14,17 @@ online_parameters = dep_config["online"]["parameters"]
 hostname = urllib.parse.urlparse(dep_config["watsonx_url"]).hostname or ""
 is_cloud_url = hostname.lower().endswith("cloud.ibm.com")
 instance_id = None if is_cloud_url else "openshift"
+
 url = dep_config["watsonx_url"]
 api_key = dep_config["watsonx_apikey"]
 space_id = dep_config["space_id"]
 db_connection_id = dep_config["online"]["parameters"]["postgres_db_conenction_id"]
 
-temp_client = APIClient(
-    credentials=Credentials(url=url, api_key=api_key),
-    space_id=space_id,
-)
-
-context = RuntimeContext(api_client=temp_client)
-
 client = APIClient(
-    credentials=Credentials(
-        url=url,
-        token=context.generate_token(),
-        instance_id=instance_id,
-    ),
+    credentials=Credentials(url=url, api_key=api_key, instance_id=instance_id),
     space_id=space_id,
 )
+
 DB_URI = generate_database_URI(client, db_connection_id)
 
 with PostgresSaver.from_conn_string(DB_URI) as saver:

@@ -248,23 +248,21 @@ watsonx-ai service invoke --deployment_id "<DEPLOYMENT_ID>" "<PROMPT>"
 watsonx-ai service invoke "<PROMPT>"
 ```
 
-### ⚠️ Alternative flow: Python Script (Deprecated)
+### 🔧 Alternative flow: Python Script
 Follow these steps to inference your deployment. The [query_existing_deployment.py](examples/query_existing_deployment.py) file shows how to test the existing deployment using `watsonx.ai` library.
 
 1. **Initialize the deployment ID**:
 
-    Initialize the `deployment_id` variable in the [query_existing_deployment.py](examples/query_existing_deployment.py) file.  
-    The _deployment_id_ of your deployment can be obtained from [the previous section](#%EF%B8%8F-deploying-on-ibm-cloud) by running [scripts/deploy.sh](scripts/deploy.py) oud).
+    Initialize the `deployment_id` and `thread_id` variables in the [query_existing_deployment.py](examples/query_existing_deployment.py) file.  
+    The _deployment_id_ of your deployment can be obtained from `config.toml` file. 
 
 2. **Run the script for querying the deployment**:
 
    ```sh
    poetry run python examples/query_existing_deployment.py
    ```
-   When you run this command, a new conversation session is created and associated with a unique thread_id generated using a UUID. This ID identifies the session and all its stored messages. The thread_id is also printed to the console. If want, you can delete this conversation at any time - more informations you can find in [deleting a conversation by thread ID](#-deleting-a-conversation-by-thread-ID) section.
+   When you run this command, a new conversation session is created and associated with your _thread_id_. This ID identifies the session and all its stored messages. If want, you can delete this conversation at any time - more informations you can find in [deleting a conversation by thread ID](#-deleting-a-conversation-by-thread-ID) section.
 
-> [!WARNING]  
-> This flow is deprecated and will be removed in a future release. Please migrate to recommended flow as soon as possible.
 
 ## 🗑 Deleting a conversation by thread ID
 You can permanently remove the conversation associated with a specific thread.

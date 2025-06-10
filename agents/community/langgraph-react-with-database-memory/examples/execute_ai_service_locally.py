@@ -22,7 +22,12 @@ context = RuntimeContext(api_client=client)
 ai_service_resp_func = deployable_ai_service(context=context, **online_parameters)[stream]
 
 myuuid = str(uuid.uuid4())
-print(f"### thread_id: {myuuid} ###")
+header = f" thread_id: {myuuid} "
+print()
+print(u"\u2554" + len(header) * u"\u2550" + "\u2557")
+print("\u2551" + header + "\u2551")
+print(u"\u255A" + len(header) * u"\u2550" + "\u255D")
+print()
 
 def ai_service_invoke(payload):
     payload["thread_id"] = myuuid

@@ -11,7 +11,9 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    working-directory: ${{ env.AGENT_WORKDIR }}
+    defaults:
+      run:
+        working-directory: ${{ env.AGENT_WORKDIR }}
     env:
       POETRY_VENV_DIR: .venv
     steps:

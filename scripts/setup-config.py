@@ -1,12 +1,11 @@
 import os
 import shutil
-import subprocess
-import sys
 
 
-def install_package(package_name: str):
-    subprocess.check_call(["poetry", "install", package_name])
-
+# Setup config.toml
+agent_workdir = os.getenv("AGENT_WORKDIR", ".")
+config_file = f"{agent_workdir}/config.toml"
+config_template = f"{config_file}.example"
 
 def create_config(template_file: str, target_file: str):
     from tomlkit import parse, dumps
@@ -31,3 +30,6 @@ def create_config(template_file: str, target_file: str):
 
     with open(target_file, "w") as f:
         f.write(dumps(config))
+
+
+create_config(config_template, config_file)

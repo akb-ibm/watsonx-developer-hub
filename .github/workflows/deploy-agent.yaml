@@ -50,7 +50,6 @@ jobs:
         run: poetry run pip install ibm-watsonx-ai-cli
 
       - name: Set up template config
-        working-directory: .
         env:
           WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
           WATSONX_URL: ${{ secrets.WATSONX_URL }}
@@ -96,7 +95,6 @@ jobs:
         run: poetry run pip install ibm-watsonx-ai-cli
 
       - name: Set up deployment config
-        working-directory: .
         env:
           WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
           WATSONX_URL: ${{ secrets.WATSONX_URL }}
@@ -104,9 +102,7 @@ jobs:
         run: poetry run python scripts/setup-config.py
 
       - name: Deploy agent to deployment space
-        working-directory: ${{ env.AGENT_WORKDIR }}
         run: poetry run watsonx-ai service new
 
       - name: Invoke agent deployment
-        working-directory: ${{ env.AGENT_WORKDIR }}
         run: poetry run watsonx-ai service invoke "Hello, how can you help me?"

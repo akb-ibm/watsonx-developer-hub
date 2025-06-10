@@ -11,59 +11,73 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      POETRY_VENV_DIR: .venv
     steps:
-    - name: Checkout latest update
-      uses: actions/checkout@v4
+      - name: Checkout latest update
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Create virtual environment
-      run: |
-        python -m venv ./venv
-        source ./venv/bin/activate
+      - name: Cache Poetry dependencies and venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pypoetry
+            .venv
+          key: poetry-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            poetry-${{ runner.os }}-
 
-    - name: Set up template test
-      run: python scripts/setup-template-test.py
+      - name: Set up template test
+        run: python scripts/setup-template-test.py
 
-    - name: Test the tools
-      working-directory: ${{ env.AGENT_WORKDIR }}
-      run: poetry run pytest -r 'fEsxX' tests/
+      - name: Test the tools
+        working-directory: ${{ env.AGENT_WORKDIR }}
+        run: poetry run pytest -r 'fEsxX' tests/
 
-    - name: Invoke agent template
-      working-directory: ${{ env.AGENT_WORKDIR }}
-      run: watsonx-ai template invoke "Hello, how can you help me?"
+      - name: Invoke agent template
+        working-directory: ${{ env.AGENT_WORKDIR }}
+        run: poetry run watsonx-ai template invoke "Hello, how can you help me?"
 
   deploy:
     runs-on: ubuntu-latest
     needs: [test]
+    env:
+      POETRY_VENV_DIR: .venv
     steps:
-    - name: Checkout latest update
-      uses: actions/checkout@v4
+      - name: Checkout latest update
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Create virtual environment
-      run: |
-        python -m venv ./venv
-        source ./venv/bin/activate
+      - name: Restore Poetry dependencies and venv cache to speed-up installation
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pypoetry
+            .venv
+          key: poetry-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            poetry-${{ runner.os }}-
 
-    - name: Set up deployment config
-      env:
-        WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
-        WATSONX_URL: ${{ secrets.WATSONX_URL }}
-        WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID }}
-      run: python scripts/setup-agent-deployment.py
+      - name: Set up deployment config
+        env:
+          WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
+          WATSONX_URL: ${{ secrets.WATSONX_URL }}
+          WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID }}
+        run: python scripts/setup-agent-deployment.py
 
-    - name: Deploy agent to deployment space
-      working-directory: ${{ env.AGENT_WORKDIR }}
-      run: watsonx-ai service new
+      - name: Deploy agent to deployment space
+        working-directory: ${{ env.AGENT_WORKDIR }}
+        run: poetry run watsonx-ai service new
 
-    - name: Invoke agent deployment
-      working-directory: ${{ env.AGENT_WORKDIR }}
-      run: watsonx-ai service invoke "Hello, how can you help me?"
+      - name: Invoke agent deployment
+        working-directory: ${{ env.AGENT_WORKDIR }}
+        run: poetry run watsonx-ai service invoke "Hello, how can you help me?"

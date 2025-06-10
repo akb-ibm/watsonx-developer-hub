@@ -3,8 +3,7 @@ import shutil
 
 
 # Setup config.toml
-agent_workdir = os.getenv("AGENT_WORKDIR", ".")
-config_file = f"{agent_workdir}/config.toml"
+config_file = f"config.toml"
 config_template = f"{config_file}.example"
 
 def create_config(template_file: str, target_file: str):

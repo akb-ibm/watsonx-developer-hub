@@ -11,6 +11,7 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    working-directory: ${{ env.AGENT_WORKDIR }}
     env:
       POETRY_VENV_DIR: .venv
     steps:
@@ -37,15 +38,16 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Set up template test
-        run: python scripts/setup-template-test.py
+      - name: Install template with Poetry
+        run: poetry install --with dev
 
       - name: Test the tools
-        working-directory: ${{ env.AGENT_WORKDIR }}
         run: poetry run pytest -r 'fEsxX' tests/
 
-      - name: Invoke agent template
-        working-directory: ${{ env.AGENT_WORKDIR }}
+      - name: Install ibm-watsonx-ai CLI
+        run: poetry run pip install ibm-watsonx-ai-cli
+
+      - name: Invoke agent template locally
         run: poetry run watsonx-ai template invoke "Hello, how can you help me?"
 
   deploy:
@@ -82,7 +84,10 @@ jobs:
           WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
           WATSONX_URL: ${{ secrets.WATSONX_URL }}
           WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID }}
-        run: python scripts/setup-agent-deployment.py
+        run: poetry run python scripts/setup-agent-deployment.py
+
+      - name: Install ibm-watsonx-ai CLI
+        run: poetry run pip install ibm-watsonx-ai-cli
 
       - name: Deploy agent to deployment space
         working-directory: ${{ env.AGENT_WORKDIR }}

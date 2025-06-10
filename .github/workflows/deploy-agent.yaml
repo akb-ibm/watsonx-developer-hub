@@ -32,6 +32,11 @@ jobs:
           restore-keys: |
             poetry-${{ runner.os }}-
 
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Set up template test
         run: python scripts/setup-template-test.py
 
@@ -66,6 +71,11 @@ jobs:
           key: poetry-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
             poetry-${{ runner.os }}-
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Set up deployment config
         env:

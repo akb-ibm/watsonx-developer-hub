@@ -5,7 +5,7 @@ import sys
 
 
 def install_package(package_name: str):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
+    subprocess.check_call(["poetry", "install", package_name])
 
 
 def create_config(template_file: str, target_file: str):

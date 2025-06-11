@@ -1,98 +1,115 @@
-# A Base CrewAI LLM app template with function calling capabilities  
+# A Base CrewAI LLM app template with function calling capabilities 🚀
 
-Table of contents:  
-* [Introduction](#introduction)  
-* [Directory structure and file descriptions](#directory-structure-and-file-descriptions)  
-* [Prerequisites](#prerequisites)  
-* [Cloning and setting up the template](#cloning-and-setting-up-the-template)  
-* [Modifying and configuring the template](#modifying-and-configuring-the-template)  
-* [Running unit tests for the template](#running-unit-tests-for-the-template)  
-* [Running the application locally](#running-the-application-locally)  
-* [Deploying on Cloud](#deploying-on-ibm-cloud)  
-* [Inferencing the deployment](#inferencing-the-deployment)  
+## 📖 Table of Contents
+* [Introduction](#-introduction)  
+* [Directory structure and file descriptions](#-directory-structure-and-file-descriptions)  
+* [Prerequisites](#-prerequisites)  
+* [Installation](#-installation)
+* [Configuration](#%EF%B8%8F-configuration)  
+* [Modifying and configuring the template](#-modifying-and-configuring-the-template)  
+* [Testing the template](#-testing-the-template)  
+* [Running the application locally](#-running-the-application-locally)  
+* [Deploying on IBM Cloud](#%EF%B8%8F-deploying-on-ibm-cloud)  
+* [Querying the deployment](#-querying-the-deployment)  
+* [Running the graphical app locally](#%EF%B8%8F-running-the-graphical-app-locally) 
+* [Cloning template (Optional)](#-cloning-template-optional)  
 
+## 🤔 Introduction
 
-## Introduction  
+This repository provides a basic template for LLM apps built using CrewAI framework. It also makes it easy to deploy them as an AI service as part of IBM watsonx.ai for IBM Cloud[^1].
 
-This repository provides a basic template for LLM apps built using CrewAI framework. It also makes it easy to deploy them as an AI service as part of IBM watsonx.ai for IBM Cloud[^1].  
-An AI service is a deployable unit of code that captures the logic of your generative AI use case. For and in-depth description of the topic please refer to the [IBM watsonx.ai documentation](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ai-services-templates.html?context=wx&audience=wdp).  
+An AI service is a deployable unit of code that encapsulates the logic of your generative AI use case. For an in-depth description of AI services, please refer to the [IBM watsonx.ai documentation](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ai-services-templates.html?context=wx&audience=wdp).
 
-[^1]: _IBM watsonx.ai for IBM Cloud_ is a full and proper name of the component we're using in this template and only a part of the whole suite of products offered in the SaaS model within IBM Cloud environment. Throughout this README, for the sake of simplicity, we'll be calling it just an **IBM Cloud**.  
+[^1]: _IBM watsonx.ai for IBM Cloud_ is a full and proper name of the component we're using in this template and only a part of the whole suite of products offered in the SaaS model within IBM Cloud environment. Throughout this README, for the sake of simplicity, we'll be calling it just an **IBM Cloud**.
 
-The template builds a simple application with external tool for addressing Web Search Agent use case.  
+**Highlights:**
 
-## Directory structure and file descriptions  
+* 🚀 Easy-to-extend agent and tool modules
+* ⚙️ Configurable via `config.toml`
+* 🌐 Step-by-step local and cloud deployment
+
+## 🗂 Directory structure and file descriptions
 
 The high level structure of the repository is as follows:  
 
-crewai-websearch-agent  
- ┣ src  
- ┃ ┗ crewai_web_search    
- ┃     ┣ config  
- ┃     ┣ tools  
- ┃     ┣ \_\_init\_\_.py  
- ┃     ┗ crew.py  
- ┣ schema  
- ┣ ai_service.py  
- ┣ config.toml.example  
- ┗ pyproject.toml  
+```
+crewai-websearch-agent/
+├── src/
+│   └── crewai_web_search/
+│       ├── crew.py
+│       ├── tools/
+│       └── config/
+├── schema/
+├── ai_service.py
+├── config.toml.example
+└── pyproject.toml
+```
 
-- `crewai_web_search` folder: Contains CrewAI agents configuration yaml files (`src/crewai_web_search/config`) and auxiliary files used by the deployed function. These files provide various framework specific definitions and extensions. This folder is packaged and sent to IBM Cloud during deployment as a [package extension](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ml-create-custom-software-spec.html?context=wx&audience=wdp#custom-wml).  
-- `schema` folder: Contains request and response schemas for the `/ai_service` endpoint queries.  
-- `ai_service.py` file: Contains the function to be deployed as an AI service defining the application's logic  
-- `config.toml.example` file: A configuration file with placeholders that stores the deployment metadata. After downloading the template repository, copy the contents of the `config.toml.example` file to the `config.toml` file and fill in the required fields. `config.toml` file can also be used to tweak the model for your use case.
+* **`crewai_web_search`** folder: Contains CrewAI agents configuration yaml files (`src/crewai_web_search/config`) and auxiliary files used by the deployed function. These files provide various framework specific definitions and extensions. This folder is packaged and sent to IBM Cloud during deployment as a [package extension](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ml-create-custom-software-spec.html?context=wx&audience=wdp#custom-wml).  
+* **`schema`** folder: Contains request and response schemas for the `/ai_service` endpoint queries.  
+* **`ai_service.py`** file: Contains the function to be deployed as an AI service defining the application's logic  
+* **`config.toml.example`** file: A configuration file with placeholders that stores the deployment metadata. After downloading the template repository, copy the contents of the `config.toml.example` file to the `config.toml` file and fill in the required fields. `config.toml` file can also be used to tweak the model for your use case.
 
-## Prerequisites  
+## 🛠 Prerequisites
 
-- [Poetry](https://python-poetry.org/) package manager,  
-- [Pipx](https://github.com/pypa/pipx) due to Poetry's recommended [installation procedure](https://python-poetry.org/docs/#installation)  
+* **Python 3.11**
+* **[Poetry](https://python-poetry.org/)** package manager (install via [pipx](https://github.com/pypa/pipx))
+* IBM Cloud access and permissions 
 
+## 📥 Installation
 
-## Cloning and setting up the template locally  
+To begin working with this template using the Command Line Interface (CLI), please ensure that the IBM watsonx AI CLI tool is installed on your system. You can install or upgrade it using the following command:
 
+1. **Install CLI**:
 
-### Step 1: Clone the repository  
+   ```sh
+   pip install -U ibm-watsonx-ai-cli
+   ```
 
-In order not to clone the whole `IBM/watsonx-developer-hub` repository we'll use git's shallow and sparse cloning feature to checkout only the template's directory:  
+2. **Download template**:
+   ```sh
+   watsonx-ai template new "base/crewai-websearch-agent"
+   ```
 
-```sh
-git clone --no-tags --depth 1 --single-branch --filter=tree:0 --sparse https://github.com/IBM/watsonx-developer-hub.git
-cd watsonx-developer-hub
-git sparse-checkout add agents/crewai
-```  
+   Upon executing the above command, a prompt will appear requesting the user to specify the target directory for downloading the template. Once the template has been successfully downloaded, navigate to the designated template folder to proceed.
 
 > [!NOTE]
-> From now on it'll be considered that the working directory is `watsonx-developer-hub/agents/crewai`  
+> Alternatively, it is possible to set up the template using a different method. For detailed instructions, please refer to the section "[Cloning template (Optional)](#-cloning-template-optional)".
 
+3. **Install Poetry**:
 
-### Step 2: Install poetry  
+   ```sh
+   pipx install --python 3.11 poetry
+   ```
 
-```sh
-pipx install --python 3.11 poetry
-```
+4. **Install the template**:
 
-### Step 3: Install the template    
+    Running the below commands will install the repository in a separate virtual environment
+   
+   ```sh
+   poetry install
+   ```
 
-Running the below commands will install the repository in a separate virtual environment  
+5. **(Optional) Activate the virtual environment**:
 
-```sh
-poetry install
-```
+   ```sh
+   source $(poetry -q env use 3.11 && poetry env info --path)/bin/activate
+   ```
 
-### Step 4 (OPTIONAL): Activate the virtual environment  
+6. **Export PYTHONPATH**:
 
-```sh
-source $(poetry -q env use 3.11 && poetry env info --path)/bin/activate
-```
+   Adding working directory to PYTHONPATH is necessary for the next steps.
 
-### Step 5: Export PYTHONPATH  
+   ```sh
+   export PYTHONPATH=$(pwd):${PYTHONPATH}
+   ```
 
-Adding working directory to PYTHONPATH is necessary for the next steps. In your terminal execute:  
-```sh
-export PYTHONPATH=$(pwd):${PYTHONPATH}
-```
+## ⚙️ Configuration
 
-## Modifying and configuring the template  
+1. Copy `config.toml.example` → `config.toml`.
+2. Fill in IBM Cloud credentials.
+
+## 🎨 Modifying and configuring the template 
 
 [config.toml](config.toml) file should be filled in before either deploying the template on IBM Cloud or executing it locally.  
 Possible config parameters are given in the provided file and explained using comments (when necessary).  
@@ -116,7 +133,7 @@ For a detailed breakdown of the ai-service's implementation please refer the [IB
 [tools.py](src/crewai_web_search/tools/tools.py) file stores the definition for tools enhancing the chat model's capabilities.  
 To add a new tool, create a class that extends the `crewai.tools.BaseTool` base class and has a `_run` method defined.
 
-## Testing the template  
+## 🧪 Testing the template
 
 The `tests/` directory's structure resembles the repository. Adding new tests should follow this convention.  
 For exemplary purposes only the tools and some general utility functions are covered with unit tests.  
@@ -126,52 +143,150 @@ Running the below command will run the complete tests suite:
 pytest -r 'fEsxX' tests/
 ```  
 
-## Running the application locally  
+## 💻 Running the application locally
 
-It is possible to run (or even debug) the ai-service locally, however it still requires creating the connection to the IBM Cloud.  
+It is possible to run (or even debug) the ai-service locally, however it still requires creating the connection to the IBM Cloud.
 
-### Step 1: Fill in the `config` file  
+Ensure `config.toml` is configured.
 
-Enter the necessary credentials in the `config.toml` file.  
+You can test and debug your AI service locally via two alternative flows:
 
-### Step 2: Run the script for local AI service execution  
+### ✅ Recommended flow: CLI
 
 ```sh
-python examples/execute_ai_service_locally.py
-```  
+watsonx-ai template invoke "<PROMPT>"
+```
 
-### Step 3: Ask the model  
+### ⚠️ Alternative flow: Python Script (Deprecated)
 
-Choose from some pre-defined questions or ask the model your own.
+1. **Run Python Script**:
 
+   ```sh
+   python examples/execute_ai_service_locally.py
+   ```
 
-## Deploying on IBM Cloud  
+2. **Ask the model**:
 
-Follow these steps to deploy the model on IBM Cloud.  
+   Choose from some pre-defined questions or ask the model your own.
 
-### Step 1: Fill in the `config` file  
+> [!WARNING]  
+> This flow is deprecated and will be removed in a future release. Please migrate to recommended flow as soon as possible.
 
-Enter the necessary credentials in the `config.toml` file.  
+## ☁️ Deploying on IBM Cloud
 
-### Step 2: Run the deployment script  
+Follow these steps to deploy the model on IBM Cloud. 
+
+Ensure `config.toml` is configured.
+
+You can deploy your AI service to IBM Cloud via two alternative flows:
+
+### ✅ Recommended flow: CLI
+
+```sh
+watsonx-ai service new
+```
+
+*Config file updates automatically with `deployment_id`.*
+
+### ⚠️ Alternative flow: Python Script (Deprecated)
 
 ```sh
 python scripts/deploy.py
-```  
+```
 
-Successfully completed script will print on stdout the `deployment_id` which is necessary to locally test the deployment. For further info please refer [to the next section](#querying-the-deployment)  
+*Script prints `deployment_id`; update `config.toml`.*
 
-## Querying the deployment  
+> [!WARNING]  
+> This flow is deprecated and will be removed in a future release. Please migrate to recommended flow as soon as possible.
 
-Follow these steps to inference your deployment. The [query_existing_deployment.py](examples/query_existing_deployment.py) file shows how to test the existing deployment using `watsonx.ai` library.  
+## 🔍 Querying the deployment
 
-### Step 1: Initialize the deployment ID  
+You can send inference requests to your deployed AI service via two alternative flows:
 
-Initialize the `deployment_id` variable in the [query_existing_deployment.py](examples/query_existing_deployment.py) file.  
-The _deployment_id_ of your deployment can be obtained from [the previous section](#deploying-on-ibm-cloud) by running [scripts/deploy.sh](scripts/deploy.py)  
-
-### Step 2: Run the script for querying the deployment  
+### ✅ Recommended flow: CLI
 
 ```sh
-python examples/query_existing_deployment.py
-```   
+watsonx-ai service invoke --deployment_id "<DEPLOYMENT_ID>" "<PROMPT>"
+```
+
+*If `deployment_id` is set in `config.toml`, omit the flag.*
+
+```sh
+watsonx-ai service invoke "<PROMPT>"
+```
+
+### ⚠️ Alternative flow: Python Script (Deprecated)
+
+Follow these steps to inference your deployment. The [query_existing_deployment.py](examples/query_existing_deployment.py) file shows how to test the existing deployment using `watsonx.ai` library.
+
+1. **Initialize the deployment ID**:
+
+   Initialize the `deployment_id` variable in the [query_existing_deployment.py](examples/query_existing_deployment.py) file.  
+   The _deployment_id_ of your deployment can be obtained from [the previous section](#%EF%B8%8F-deploying-on-ibm-cloud) by running [scripts/deploy.sh](scripts/deploy.py) 
+
+2. **Run the script for querying the deployment**:
+
+   ```sh
+   python examples/query_existing_deployment.py
+   ```
+
+> [!WARNING]  
+> This flow is deprecated and will be removed in a future release. Please migrate to recommended flow as soon as possible.
+
+## 🖥️ Running the graphical app locally
+
+You can also run the graphical application locally using the deployed model. All you need to do is deploy the model and follow the steps below. Detailed information for each app is available in its README file.
+
+1. **Download the app**:
+
+   ```bash
+   watsonx-ai app new
+   ```
+
+2. **Configure the app**:
+
+   All required variables are defined in the config.toml file.
+   Here is an example of how to create the **WATSONX_BASE_DEPLOYMENT_URL**:
+   `https://{REGION}.ml.cloud.ibm.com/ml/v4/deployments/{deployment_id}`
+
+
+   ```bash
+   cd <app_name>
+   cp template.env .env
+   ```
+
+3. **Start the app**:
+
+   ```bash
+   watsonx-ai app run
+   ```
+
+3. **Start the app in development mode**:
+
+   ```bash
+   watsonx-ai app run --dev
+   ```
+
+   This soultion allows user to make changes to the source code while the app is running. Each time changes are saved the app reloads and is working with provided changes.
+
+---
+
+**Enjoy your coding! 🚀**
+
+---
+
+## 💾 Cloning template (Optional)
+
+1. **Clone the repo** (sparse checkout):
+
+   In order not to clone the whole `IBM/watsonx-developer-hub` repository we'll use git's shallow and sparse cloning feature to checkout only the template's directory:  
+   
+   ```sh
+   git clone --no-tags --depth 1 --single-branch --filter=tree:0 --sparse https://github.com/IBM/watsonx-developer-hub.git
+   cd watsonx-developer-hub
+   git sparse-checkout add agents/base/crewai-websearch-agent
+   cd agents/base/crewai-websearch-agent/
+   ```
+
+> [!NOTE]
+> From now on it'll be considered that the working directory is `watsonx-developer-hub/agents/base/crewai-websearch-agent`  

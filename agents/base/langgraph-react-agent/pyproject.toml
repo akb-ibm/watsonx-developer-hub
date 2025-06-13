@@ -19,6 +19,11 @@ langgraph = ">0.2,<0.3"
 pytest = "^8.3.3"
 
 
+[tool.poetry.group.eval.dependencies]
+unitxt = "^1.24.0"
+nltk = "^3.9.1"
+rouge-score = "^0.1.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

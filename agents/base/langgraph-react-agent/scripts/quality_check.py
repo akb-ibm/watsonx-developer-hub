@@ -1,31 +1,48 @@
-import importlib.util
-
-# Validate whether `unitxt`
-if not importlib.util.find_spec("unitxt"):
-    raise ModuleNotFoundError(
-        f"ModuleNotFoundError: unitxt is not installed. Please install it using `pip install unitxt`."
-    )
-
 import json
 from pathlib import Path
 import warnings
+from typing import TypedDict, Literal
 
-from unitxt import get_logger
-from unitxt.api import create_dataset, evaluate
+try:
+    from unitxt import get_logger
+    from unitxt.api import create_dataset, evaluate
+    from unitxt.blocks import Task, InputOutputTemplate
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError(
+        f"ModuleNotFoundError: unitxt is not installed. Please install it using `pip install -U unitxt`."
+    ) from e
+
 import ibm_watsonx_ai
 from utils import load_config
 
-deployment_id = "PLACEHOLDER FOR YOUR DEPLOYMENT ID"
-stream = True
+
+# Define schema
+class MessageSchema(TypedDict):
+    role: Literal["system", "user"]
+    content: str
+
+
+class PayloadSchema(TypedDict):
+    messages: list[MessageSchema]
+
+
+class BenchmarkItemSchema(TypedDict):
+    id: str
+    payload: PayloadSchema
+    correct_answer: str
+
+
+# Default values
 
 SCORE_THRESHOLD = 0.3
 
 
+# Helper functions
 def retrieve_generated_answer(chat_completions: dict) -> str:
     return chat_completions["choices"][0]["message"]["content"]
 
 
-def load_benchmarking_data(benchmarking_data_path: str) -> list[dict]:
+def load_benchmarking_data(benchmarking_data_path: str) -> list[BenchmarkItemSchema]:
     with open(benchmarking_data_path, "r") as f:
         benchmarking_data = [json.loads(line) for line in f]
 
@@ -33,7 +50,7 @@ def load_benchmarking_data(benchmarking_data_path: str) -> list[dict]:
 
 
 def generate_answers(
-    input_data: list[dict], ids: list[str]
+    input_data: list[PayloadSchema], ids: list[str]
 ) -> tuple[list[str], list[str]]:
     results = []
     final_ids = []
@@ -55,24 +72,50 @@ def generate_answers(
 
 
 def evaluate_agent(
-    evaluation_data: list[dict], predictions: list[str], metrics: list[str]
+    evaluation_data: list[BenchmarkItemSchema],
+    predictions: list[str],
+    metrics: list[str],
 ) -> float:
 
     dataset = [
         {
             "question": eval_data["payload"]["messages"][-1]["content"],
-            "answers": [eval_data["correct_answer"]],
+            "answer": eval_data["correct_answer"],
+            "system_prompt": (
+                first_message["content"]
+                if (first_message := eval_data["payload"]["messages"][0])["role"]
+                == "system"
+                else ""
+            ),
         }
         for eval_data in evaluation_data
     ]
 
-    dataset = create_dataset(
-        task="tasks.qa.open",
-        test_set=dataset,
+    # Define the task and evaluation metric
+    task = Task(
+        input_fields={"question": str, "system_prompt": str},
+        reference_fields={"answer": str},
+        prediction_type=str,
         metrics=metrics,
     )
 
-    results = evaluate(predictions, dataset["test"])
+    # Create a template to format inputs and outputs
+    template = InputOutputTemplate(
+        instruction="{system_prompt}",
+        input_format="{question}",
+        output_format="{answer}",
+        postprocessors=["processors.lower_case"],
+    )
+
+    dataset = create_dataset(
+        task=task,
+        template=template,
+        format="formats.chat_api",
+        test_set=dataset,
+        split="test",
+    )
+
+    results = evaluate(predictions=predictions, dataset=dataset)
 
     df_results = results.global_scores.to_df()
     print(df_results)
@@ -81,10 +124,11 @@ def evaluate_agent(
 
 
 if __name__ == "__main__":
+    # Load config and set deployment_id
     config = load_config("deployment")
-
     deployment_id = config["deployment_id"]
 
+    # Init ibm_watsonx_ai.APIClient
     api_client = ibm_watsonx_ai.APIClient(
         credentials=ibm_watsonx_ai.Credentials(
             url=config["watsonx_url"], api_key=config["watsonx_apikey"]
@@ -110,7 +154,7 @@ if __name__ == "__main__":
         payloads_list, [data["id"] for data in benchmarking_data]
     )
 
-    metrics = ["metrics.qa.open.recommended_no_gpu"]
+    metrics = ["metrics.rouge", "metrics.bleu"]
 
     # Check whether QA metric score is larger than acceptable threshold
     assert (

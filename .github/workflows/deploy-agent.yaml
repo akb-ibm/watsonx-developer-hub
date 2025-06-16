@@ -106,3 +106,6 @@ jobs:
 
       - name: Invoke agent deployment
         run: poetry run watsonx-ai service invoke "Hello, how can you help me?"
+
+      - name: Quality validation
+        run: poetry run python scripts/quality_check.py

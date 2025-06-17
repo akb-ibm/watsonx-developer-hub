@@ -2,7 +2,7 @@ name: Test and deploy the agent
 
 on:
   push:
-    branches: [main]
+    branches: [dev_add_quality_tests]
 
 env:
   PYTHON_VERSION: ${{ vars.PYTHON_VERSION }}

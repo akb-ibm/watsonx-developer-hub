@@ -41,7 +41,7 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install template with Poetry
-        run: poetry install --with dev
+        run: poetry install --with dev,eval
 
       - name: Test the tools
         run: poetry run pytest -r 'fEsxX' tests/

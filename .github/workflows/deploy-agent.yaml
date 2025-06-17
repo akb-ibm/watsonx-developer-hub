@@ -46,9 +46,6 @@ jobs:
       - name: Test the tools
         run: poetry run pytest -r 'fEsxX' tests/
 
-      - name: Install ibm-watsonx-ai CLI
-        run: poetry run pip install ibm-watsonx-ai-cli
-
       - name: Set up template config
         env:
           WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
@@ -90,9 +87,6 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Install ibm-watsonx-ai CLI
-        run: poetry run pip install ibm-watsonx-ai-cli
 
       - name: Set up deployment config
         env:

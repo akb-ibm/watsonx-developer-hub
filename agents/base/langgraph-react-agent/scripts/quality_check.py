@@ -3,14 +3,9 @@ from pathlib import Path
 import warnings
 from typing import TypedDict, Literal
 
-try:
-    from unitxt import get_logger
-    from unitxt.api import create_dataset, evaluate
-    from unitxt.blocks import Task, InputOutputTemplate
-except ModuleNotFoundError as e:
-    raise ModuleNotFoundError(
-        f"ModuleNotFoundError: unitxt is not installed. Please install it using `pip install -U unitxt`."
-    ) from e
+from unitxt.api import create_dataset, evaluate
+from unitxt.blocks import Task, InputOutputTemplate
+
 
 import ibm_watsonx_ai
 from utils import load_config

@@ -108,4 +108,4 @@ jobs:
         run: poetry run python scripts/quality_check.py
 
       - name: Remove deployment and associated asset
-        run: y | poetry run watsonx-ai service delete $(python -c "from utils import load_config; print(load_config('deployment')['deployment_id'])")
+        run: yes | poetry run watsonx-ai service delete $(python -c "from utils import load_config; print(load_config('deployment')['deployment_id'])")

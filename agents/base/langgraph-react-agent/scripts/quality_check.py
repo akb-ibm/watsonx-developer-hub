@@ -29,7 +29,7 @@ class BenchmarkItemSchema(TypedDict):
 
 # Default values
 
-SCORE_THRESHOLD = 0.3
+SCORE_THRESHOLD = 0.5
 
 
 # Helper functions

@@ -74,16 +74,16 @@ def evaluate_agent(
 
     dataset = [
         {
-            "question": eval_data["payload"]["messages"][-1]["content"],
-            "answer": eval_data["correct_answer"],
+            "question": record["payload"]["messages"][-1]["content"],
+            "answer": record["correct_answer"],
             "system_prompt": (
                 first_message["content"]
-                if (first_message := eval_data["payload"]["messages"][0])["role"]
+                if (first_message := record["payload"]["messages"][0])["role"]
                 == "system"
                 else ""
             ),
         }
-        for eval_data in evaluation_data
+        for record in evaluation_data
     ]
 
     # Define the task and evaluation metric
@@ -132,9 +132,9 @@ if __name__ == "__main__":
     )
 
     # Load benchmarking data
-    benchmarking_filename = "benchmarking_data.json"
+    benchmarking_filename = "benchmarking_data.jsonl"
     benchmarking_data_path = (
-        Path(__file__).parents[1] / Path("./benchmarking_data") / benchmarking_filename
+        Path(__file__).parents[1] / Path("benchmarking_data") / benchmarking_filename
     )
 
     benchmarking_data = load_benchmarking_data(
@@ -144,9 +144,10 @@ if __name__ == "__main__":
     # Executing deployed AI service with provided scoring data
     payloads_list = [data["payload"] for data in benchmarking_data]
     correct_answer_list = [data["correct_answer"] for data in benchmarking_data]
+    ids_list = [data["id"] for data in benchmarking_data]
 
     final_ids, answers = generate_answers(
-        payloads_list, [data["id"] for data in benchmarking_data]
+        payloads_list, ids_list
     )
 
     metrics = ["metrics.rouge", "metrics.bleu"]

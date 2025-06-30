@@ -41,13 +41,10 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install template with Poetry
-        run: poetry install --with dev
+        run: poetry install --with dev,eval
 
       - name: Test the tools
         run: poetry run pytest -r 'fEsxX' tests/
-
-      - name: Install ibm-watsonx-ai CLI
-        run: poetry run pip install ibm-watsonx-ai-cli
 
       - name: Set up template config
         env:
@@ -91,8 +88,8 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Install ibm-watsonx-ai CLI
-        run: poetry run pip install ibm-watsonx-ai-cli
+      - name: Install template with Poetry
+        run: poetry install --with dev,eval
 
       - name: Set up deployment config
         env:
@@ -106,3 +103,9 @@ jobs:
 
       - name: Invoke agent deployment
         run: poetry run watsonx-ai service invoke "Hello, how can you help me?"
+
+      - name: Quality validation
+        run: poetry run python scripts/quality_check.py
+
+      - name: Remove deployment and associated asset
+        run: yes | poetry run watsonx-ai service delete $(python -c "from utils import load_config; print(load_config('deployment')['deployment_id'])")

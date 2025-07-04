@@ -1,3 +1,6 @@
+# Assisted by watsonx Code Assistant
+
+# quality-check.py
 import json
 from pathlib import Path
 import warnings
@@ -6,38 +9,48 @@ from typing import TypedDict, Literal
 from unitxt.api import create_dataset, evaluate
 from unitxt.blocks import Task, InputOutputTemplate
 
-
 import ibm_watsonx_ai
 from utils import load_config
 
 
-# Define schema
+# Define schema for message, payload, and benchmark item structures
 class MessageSchema(TypedDict):
+    """Schema for a message in a conversation, specifying its role and content."""
     role: Literal["system", "user"]
     content: str
 
 
 class PayloadSchema(TypedDict):
+    """Schema for a payload containing a list of messages."""
     messages: list[MessageSchema]
 
 
 class BenchmarkItemSchema(TypedDict):
+    """Schema for a benchmark item containing an ID, payload, and correct answer."""
     id: str
     payload: PayloadSchema
     correct_answer: str
 
 
-# Default values
-
+# Default threshold for evaluation score
 SCORE_THRESHOLD = 0.5
 
 
 # Helper functions
 def retrieve_generated_answer(chat_completions: dict) -> str:
+    """Extract the generated answer from the chat completion response."""
     return chat_completions["choices"][0]["message"]["content"]
 
 
 def load_benchmarking_data(benchmarking_data_path: str) -> list[BenchmarkItemSchema]:
+    """Load benchmarking data from a JSON Lines file.
+
+    Args:
+        benchmarking_data_path (str): Path to the JSON Lines file containing benchmark data.
+
+    Returns:
+        list[BenchmarkItemSchema]: List of benchmark items parsed from the file.
+    """
     with open(benchmarking_data_path, "r") as f:
         benchmarking_data = [json.loads(line) for line in f]
 
@@ -47,6 +60,15 @@ def load_benchmarking_data(benchmarking_data_path: str) -> list[BenchmarkItemSch
 def generate_answers(
     input_data: list[PayloadSchema], ids: list[str]
 ) -> tuple[list[str], list[str]]:
+    """Generate answers using the deployed AI service for given input data.
+
+    Args:
+        input_data (list[PayloadSchema]): List of payloads containing messages.
+        ids (list[str]): List of IDs corresponding to the payloads.
+
+    Returns:
+        (list[str], list[str]): Tuples of final IDs and generated answers.
+    """
     results = []
     final_ids = []
 
@@ -71,7 +93,16 @@ def evaluate_agent(
     predictions: list[str],
     metrics: list[str],
 ) -> float:
+    """Evaluate the agent's performance using provided metrics.
 
+    Args:
+        evaluation_data (list[BenchmarkItemSchema]): List of benchmark items for evaluation.
+        predictions (list[str]): List of generated answers.
+        metrics (list[str]): List of evaluation metrics to use.
+
+    Returns:
+        float: The evaluation score.
+    """
     dataset = [
         {
             "question": record["payload"]["messages"][-1]["content"],

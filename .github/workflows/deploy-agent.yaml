@@ -50,7 +50,7 @@ jobs:
         env:
           WATSONX_API_KEY: ${{ secrets.WATSONX_API_KEY }}
           WATSONX_URL: ${{ secrets.WATSONX_URL }}
-          WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID }}
+          WATSONX_SPACE_ID: ${{ secrets.WATSONX_SPACE_ID_DEV }}
         run: poetry run python scripts/setup-config.py
 
       - name: Invoke agent template locally

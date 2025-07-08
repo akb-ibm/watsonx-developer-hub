@@ -52,7 +52,7 @@
   - **WATSONX_SPACE_ID_DEV**: The ID of your development space in watsonx.
   - **WATSONX_SPACE_ID_PROD**: The ID of your production space in watsonx.
 - In the **Variables** tab create the following variables:
-  - **AGENT_WORKDIR**: Working directory of your project relative to the root catalog of your repository (e.g. `agent/my-awesome-agent`).
+  - **AGENT_WORKDIR**: Working directory of your project relative to the root catalog of your repository (e.g. `agents/base/langgraph-react-agent`).
   - **PYTHON_VERSION**: Versoin of a Python interpreter that you want to use in your workflow.
 
 #### 3. GitHub Repository Files
@@ -60,8 +60,8 @@
 - Copy the following files to the `.github/workflows` directory in your GitHub repository:
   - `deploy-agent.yaml`: file that contains workflow definition including worker and triggers specification.
 - Add the following Python scripts to the directory specific to your agent location provided in `AGENT_WORKDIR` variable:
-  - `setup-config.py`: This script sets up configuration files for both testing and deployment, using environment variables for Watsonx API keys, URL, and space IDs.
-  - `quality-check.py`: This script performs quality checks on the agent's code and setup, ensuring it meets certain standards before deployment.
+  - `setup-config.py`: This script sets up configuration files for both testing and deployment, using environment variables for Watsonx API keys, URL, and space IDs (see the example in `agents/base/langgraph-react-agent/scripts/setup-config.py`).
+  - `quality-check.py`: This script performs quality checks on the agent's code and setup, ensuring it meets certain standards before deployment (see the example in `agents/base/langgraph-react-agent/scripts/quality-check.py`).
 
 #### 4. Branch Protection (Optional but Recommended)
 

@@ -4,32 +4,38 @@
 import json
 from pathlib import Path
 import warnings
-from typing import TypedDict, Literal
+from typing import TypedDict, Literal, Sequence
 
-from unitxt.api import create_dataset, evaluate
-from unitxt.blocks import Task, InputOutputTemplate
+# catch warning `pkg_resources is deprecated as an API. ...` from unitxt.operator.py
+with warnings.catch_warnings(category=UserWarning):
+    warnings.filterwarnings("ignore")
+    from unitxt.api import create_dataset, evaluate  # type: ignore[import-untyped]
+    from unitxt.blocks import Task, InputOutputTemplate  # type: ignore[import-untyped]
 
-import ibm_watsonx_ai
+import ibm_watsonx_ai  # type: ignore[import-untyped]
 from utils import load_config
 
 
 # Define schema for message, payload, and benchmark item structures
 class MessageSchema(TypedDict):
     """Schema for a message in a conversation, specifying its role and content."""
+
     role: Literal["system", "user"]
     content: str
 
 
 class PayloadSchema(TypedDict):
     """Schema for a payload containing a list of messages."""
+
     messages: list[MessageSchema]
 
 
 class BenchmarkItemSchema(TypedDict):
     """Schema for a benchmark item containing an ID, payload, and correct answer."""
+
     id: str
-    payload: PayloadSchema
-    correct_answer: str
+    input: str
+    ground_truth: str
 
 
 # Default threshold for evaluation score
@@ -58,12 +64,12 @@ def load_benchmarking_data(benchmarking_data_path: str) -> list[BenchmarkItemSch
 
 
 def generate_answers(
-    input_data: list[PayloadSchema], ids: list[str]
+    input_data: Sequence[PayloadSchema], ids: list[str]
 ) -> tuple[list[str], list[str]]:
     """Generate answers using the deployed AI service for given input data.
 
     Args:
-        input_data (list[PayloadSchema]): List of payloads containing messages.
+        input_data (Sequence[PayloadSchema]): List of payloads containing messages.
         ids (list[str]): List of IDs corresponding to the payloads.
 
     Returns:
@@ -105,12 +111,11 @@ def evaluate_agent(
     """
     dataset = [
         {
-            "question": record["payload"]["messages"][-1]["content"],
-            "answer": record["correct_answer"],
+            "question": record["input"],
+            "answer": record["ground_truth"],
             "system_prompt": (
-                first_message["content"]
-                if (first_message := record["payload"]["messages"][0])["role"]
-                == "system"
+                first_message
+                if (first_message := record.get("system_prompt")) == "system"
                 else ""
             ),
         }
@@ -164,8 +169,11 @@ if __name__ == "__main__":
 
     # Load benchmarking data
     benchmarking_filename = "benchmarking_data.jsonl"
+
+    # benchmarking data are read from benchmarking_data dir
+    benchmarking_data_dir = Path("benchmarking_data")
     benchmarking_data_path = (
-        Path(__file__).parents[1] / Path("benchmarking_data") / benchmarking_filename
+        Path(__file__).parents[1] / benchmarking_data_dir / benchmarking_filename
     )
 
     benchmarking_data = load_benchmarking_data(
@@ -173,13 +181,14 @@ if __name__ == "__main__":
     )
 
     # Executing deployed AI service with provided scoring data
-    payloads_list = [data["payload"] for data in benchmarking_data]
-    correct_answer_list = [data["correct_answer"] for data in benchmarking_data]
+    payloads_list: list[PayloadSchema] = [
+        {"messages": [{"role": "user", "content": data["input"]}]}
+        for data in benchmarking_data
+    ]
+    correct_answer_list = [data["ground_truth"] for data in benchmarking_data]
     ids_list = [data["id"] for data in benchmarking_data]
 
-    final_ids, answers = generate_answers(
-        payloads_list, ids_list
-    )
+    final_ids, answers = generate_answers(payloads_list, ids_list)
 
     metrics = ["metrics.rouge", "metrics.bleu"]
 

@@ -34,6 +34,7 @@ For more information, see the [documentation](https://dataplatform.cloud.ibm.com
 
 The high level structure of the repository is as follows:
 
+```
 langgraph-arxiv-research-model-gateway
  ┣ src  
  ┃ ┣ langgraph_react_agent_model_gateway
@@ -41,10 +42,11 @@ langgraph-arxiv-research-model-gateway
  ┣ ai_service.py  
  ┣ config.toml.example  
  ┣ pyproject.toml
+```
 
-- `langgraph_react_agent_model_gateway` folder: Contains auxiliary files used by the deployed function. They provide various framework specific definitions and extensions. This folder is packaged and sent to IBM Cloud during deployment as a [package extension](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ml-create-custom-software-spec.html?context=wx&audience=wdp#custom-wml).
-- `schema` folder: Contains request and response schemas for the `/ai_service` endpoint queries.
-- `ai_service.py` file: Contains the function to be deployed as an AI service defining the application's logic
+- `langgraph_react_agent_model_gateway` directory: Contains auxiliary files used by the deployed function. They provide various framework specific definitions and extensions. This directory is packaged and sent to IBM Cloud during deployment as a [package extension](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ml-create-custom-software-spec.html?context=wx&audience=wdp#custom-wml).
+- `schema` directory: Contains request and response schemas for the `/ai_service` endpoint queries.
+- `ai_service.py` file: Contains the function to be deployed as an AI service defining the application's logic.
 - `config.toml` file: A configuration file with placeholders that stores the deployment metadata. After downloading the template repository, copy the contents of the `config.toml.example` file to the `config.toml` file and fill in the required fields. `config.toml` file can also be used to tweak the model for your use case. 
 
 ## Prerequisites
@@ -112,7 +114,12 @@ Everything is now set up to run the agent locally in the next section.
 
 ## Running the agent locally
 
-You can run the agent locally and interact with the agent via a terminal-based chat application.
+To run the agent locally, you can use `watsonx-ai` CLI:
+```sh
+watsonx-ai template invoke "<your-prompt>"
+```
+
+Alternatively, you can interact with the agent via a terminal-based chat application:
 
 - ### Step 1: Run the script for local AI service execution
 
@@ -122,8 +129,7 @@ You can run the agent locally and interact with the agent via a terminal-based c
 
 - ### Step 2: Ask the agent
 
-  Choose from some pre-defined questions or ask the agent questions of your own.
-
+  Choose from some pre-defined questions or ask the agent questions of your own.  
   Please bear in mind that the research paper should be available on arXiv if you want the agent to be able to summarize it.
 
 Proceed to the next section to learn how to to modify the agent, or continue to [test](#testing-the-template) or [deploy](#deploying-on-ibm-cloud) the agent.
@@ -161,27 +167,30 @@ poetry run pytest -r 'fEsxX' tests/
 
 Follow these steps to deploy the model on IBM Cloud.
 
-- ### Step 1: Fill in the `config` file
+- ### Step 1: Fill in the configuration file
 
   Enter the necessary credentials in the `config.toml` file.
 
-- ### Step 2: Run the deployment script
-
+- ### Step 2: Create deployment using `watsonx-ai` CLI
   ```sh
-  poetry run python scripts/deploy.py
+  watsonx-ai service new
   ```
 
-Successfully completed script will print on stdout the `deployment_id` which is necessary to locally test the deployment. For further info please refer [to the next section](#querying-the-deployment)
+  Successfully completed operation will set the `deployment_id` in `config.toml` to reference the newly created deployment.
 
 ## Querying the deployment
 
-Follow these steps to inference your deployment. The [query_existing_deployment.py](examples/query_existing_deployment.py) file shows how to test the existing deployment using `watsonx.ai` library.
+To query the deployment, you can use `watsonx-ai` CLI:
+```sh
+watsonx-ai service invoke "<your-prompt>"
+```
+
+Alternatively, follow these steps to inference your deployment. The [query_existing_deployment.py](examples/query_existing_deployment.py) file shows how to test the existing deployment using `ibm-watsonx-ai` library.
 
 - ### Step 1: Initialize the deployment ID
 
-  Initialize the `deployment_id` variable in the [query_existing_deployment.py](examples/query_existing_deployment.py) file.
-
-  The _deployment_id_ of your deployment can be obtained from [the previous section](#deploying-on-ibm-cloud) by running [scripts/deploy.sh](scripts/deploy.py)
+  Initialize the `deployment_id` variable in the [query_existing_deployment.py](examples/query_existing_deployment.py) file.  
+  The `deployment_id` can be obtained from the `config.toml` file after running [the previous section](#deploying-on-ibm-cloud).
 
 - ### Step 2: Run the script for querying the deployment
 

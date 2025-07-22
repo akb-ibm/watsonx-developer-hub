@@ -119,19 +119,6 @@ To run the agent locally, you can use `watsonx-ai` CLI:
 watsonx-ai template invoke "<your-prompt>"
 ```
 
-Alternatively, you can interact with the agent via a terminal-based chat application:
-
-- ### Step 1: Run the script for local AI service execution
-
-  ```sh
-  poetry run python examples/execute_ai_service_locally.py
-  ```
-
-- ### Step 2: Ask the agent
-
-  Choose from some pre-defined questions or ask the agent questions of your own.  
-  Please bear in mind that the research paper should be available on arXiv if you want the agent to be able to summarize it.
-
 Proceed to the next section to learn how to to modify the agent, or continue to [test](#testing-the-template) or [deploy](#deploying-on-ibm-cloud) the agent.
 
 ## Optional: Modify and configure the template
@@ -184,19 +171,6 @@ To query the deployment, you can use `watsonx-ai` CLI:
 ```sh
 watsonx-ai service invoke "<your-prompt>"
 ```
-
-Alternatively, follow these steps to inference your deployment. The [query_existing_deployment.py](examples/query_existing_deployment.py) file shows how to test the existing deployment using `ibm-watsonx-ai` library.
-
-- ### Step 1: Initialize the deployment ID
-
-  Initialize the `deployment_id` variable in the [query_existing_deployment.py](examples/query_existing_deployment.py) file.  
-  The `deployment_id` can be obtained from the `config.toml` file after running [the previous section](#deploying-on-ibm-cloud).
-
-- ### Step 2: Run the script for querying the deployment
-
-  ```sh
-  poetry run python examples/query_existing_deployment.py
-  ```
 
 ### What's next?
 

@@ -26,6 +26,6 @@ def get_graph_closure(client: APIClient, model: str) -> Callable:
         """Get compiled graph with overwritten system prompt, if provided"""
 
         # Create instance of compiled graph
-        return create_react_agent(chat, tools=TOOLS, state_modifier=system_prompt)
+        return create_react_agent(chat, tools=TOOLS, prompt=system_prompt)
 
     return get_graph

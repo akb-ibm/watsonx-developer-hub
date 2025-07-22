@@ -14,7 +14,7 @@
   watsonx_apikey = ""
   watsonx_token = ""
 
-  # should follow the format: `https://{REGION}.ml.cloud.ibm.com`
+  # Should follow the format: `https://{REGION}.ml.cloud.ibm.com`
   watsonx_url = ""
 
   # Deployment space id is required to create deployment with AI service content.

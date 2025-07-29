@@ -13,7 +13,7 @@ from langchain_ibm import ChatWatsonx
 
 
 
-class SythesizerAgent:
+class ExtractorAgent:
     """
     A class to represent a synthesizer agentic system.
     This class is a placeholder for future implementations.

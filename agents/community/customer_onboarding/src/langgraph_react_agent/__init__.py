@@ -3,8 +3,8 @@ from .tools import (
     get_arxiv_contents
 )
 
-from .modules.synthesizer_agent import (
-    SythesizerAgent
+from .modules.extractor_agent import (
+    ExtractorAgent
 )
 
 TOOLS = [

@@ -1,18 +1,20 @@
 from typing import Callable
+from typing import Annotated, Literal, TypedDict
 
 from ibm_watsonx_ai import APIClient
 from langchain_ibm import ChatWatsonx
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import create_react_agent
-
-from langgraph_react_agent import TOOLS
-
-from langgraph_react_agent.modules.synthesizer_agent import SythesizerAgent
-
-
+from langchain_core.messages import AIMessage
 from langgraph.graph import END, StateGraph, MessagesState
 from langgraph.graph import StateGraph
 from langgraph.prebuilt import ToolNode
+
+
+from langgraph_react_agent import TOOLS
+from langgraph_react_agent.modules.extractor_agent import ExtractorAgent
+
+
 
 def get_graph_closure(client: APIClient, model_id: str) -> Callable:
     """Graph generator closure."""
@@ -26,33 +28,65 @@ def get_graph_closure(client: APIClient, model_id: str) -> Callable:
 
 
         #Define individual react agents
-        synthesizer_agent = SythesizerAgent(name="react_agent_synthesizer", client=client, model_id=model_id)
-        synth_agent_react = synthesizer_agent.make_react_agent()
+        extractor_agent_obj = ExtractorAgent(name="react_agent_synthesizer", client=client, model_id=model_id)
+        extractor_agent_obj_runner = extractor_agent_obj.make_react_agent()
+
+        # #Define individual react agents
+        # extractor_agent_obj = ExtractorAgent(name="react_agent_synthesizer", client=client, model_id=model_id)
+        # extractor_agent_obj_runner = extractor_agent_obj.make_react_agent()
+
+        # Define the function that determines whether to continue or not
+        def should_continue(state: MessagesState) -> Literal[ "validator_agent", "tools", END]:
+            messages = state['messages']
+            last_message = messages[-1]
+            # If the LLM makes a tool call, then we route to the "tools" node
+            if last_message.tool_calls:
+                return "tools"
+            
+            if "ask validator agent" in last_message.content.lower():
+                return "validator_agent"
+
+            if "ask extractor agent" in last_message.content.lower():
+                return "validator_agent"
+                        
+            # Otherwise, we stop (reply to the user)
+            return END
 
         # Define the function that calls the react agent
-        def call_model(state: MessagesState):
+        def infer_extractor_agent_obj_runner(state: MessagesState):
             messages = state['messages']
-            # response = synthesizer_agent.invoke_model_stateful(state)
-            # response = synthesizer_agent.chat_watsonx.invoke(messages)
-            response = synth_agent_react.invoke(state)
-            # We return a list, because this will get added to the existing list
-            # return {"messages": [response]}
+
+            response = extractor_agent_obj_runner.invoke(state)           
+
+            try:
+                ai_message = AIMessage(
+                content=response if isinstance(response, str) else response.get("output", ""),
+                response_metadata={"source": "extractor_agent"},  # Optional: Add your own metadata
+                )
+            except Exception as e:
+                print(f"Error creating AIMessage: {e}")
+                ai_message = AIMessage(
+                    content="An error occurred while processing your request. Please try again.",
+                    response_metadata={"source": "extractor_agent"},
+                )   
+
+            messages.append(ai_message)
+            state['messages'] = messages
+            # print ("\n\nState after adding response:", state)
             return state
 
 
         # Define a new graph
         workflow = StateGraph(MessagesState)
-        # Define the two nodes we will cycle between
-        workflow.add_node("agent", call_model)
+        workflow.add_node("extractor_agent", infer_extractor_agent_obj_runner)
+        workflow.add_node("validator_agent", infer_extractor_agent_obj_runner)
         workflow.add_node("tools", tool_node)
-        # Set the entrypoint as `agent`
-        # This means that this node is the first one called
-        workflow.set_entry_point("agent")
-        # We now add a conditional edge
-
-        # We now add a normal edge from `tools` to `agent`.
-        # This means that after `tools` is called, `agent` node is called next.
-        workflow.add_edge("tools", 'agent')
+        workflow.set_entry_point("extractor_agent")
+        workflow.add_conditional_edges(
+            "extractor_agent",
+            should_continue,
+        )
+        workflow.add_edge("validator_agent", "extractor_agent")
         return workflow.compile()
     
     return get_graph

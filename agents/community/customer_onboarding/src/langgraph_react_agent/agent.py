@@ -10,54 +10,15 @@ from langgraph_react_agent import TOOLS
 from langgraph_react_agent.modules.synthesizer_agent import SythesizerAgent
 
 
-# def get_graph_closure(client: APIClient, model_id: str) -> Callable:
-#     """Graph generator closure."""
-
-#     # Initialise ChatWatsonx
-#     chat = ChatWatsonx(model_id=model_id, watsonx_client=client)
-
-#     # Define system prompt
-#     default_system_prompt = "You are a helpful AI Research assistant, please respond to the user's query to the best of your ability! Execute a tool call whenever you see fit. When using tools, make sure to format the URL to an arXiv research paper like 'https://arxiv.org/html/2501.12948v1'"
-
-
-#     def get_graph(system_prompt=default_system_prompt) -> CompiledGraph:
-#         """Get compiled graph with overwritten system prompt, if provided"""
-
-#         # Create instance of compiled graph
-#         return create_react_agent(
-#             chat, tools=TOOLS, state_modifier=system_prompt
-#         )
-
-#     return get_graph
-
-# def get_graph_closure(client: APIClient, model_id: str) -> Callable:
-#         synthesizer_agent = SythesizerAgent(name="synthesizer_subgraph", client=client, model_id=model_id)
-#         return synthesizer_agent.compile_graph()
-
-
+from langgraph.graph import END, StateGraph, MessagesState
+from langgraph.graph import StateGraph
+from langgraph.prebuilt import ToolNode
 
 def get_graph_closure(client: APIClient, model_id: str) -> Callable:
     """Graph generator closure."""
 
-    # Initialise ChatWatsonx
-    # chat = ChatWatsonx(model_id=model_id, watsonx_client=client)
-    # synthesizer_agent = SythesizerAgent(name="synthesizer_subgraph", client=client, model_id=model_id)
-
     # Define system prompt
-    default_system_prompt = "You are a helpful AI Research assistant, please respond to the user's query to the best of your ability! Execute a tool call whenever you see fit. When using tools, make sure to format the URL to an arXiv research paper like 'https://arxiv.org/html/2501.12948v1'"
-
-
-    # def get_graph(system_prompt=default_system_prompt) -> CompiledGraph:
-    #     """Get compiled graph with overwritten system prompt, if provided"""
-
-    #     # Create instance of compiled graph
-    #     return create_react_agent(
-    #         synthesizer_agent.chat_watsonx, tools=TOOLS, state_modifier=system_prompt
-    #     )
-
-    from langgraph.graph import END, StateGraph, MessagesState
-    from langgraph.graph import StateGraph
-    from langgraph.prebuilt import ToolNode
+    default_system_prompt = "You are a helpful AI Research assistant named Onboarding Buddy, please respond to the user's query to the best of your ability! Execute a tool call whenever you see fit."
 
     def get_graph(system_prompt=default_system_prompt) -> CompiledGraph:
         # Define the function that calls the model

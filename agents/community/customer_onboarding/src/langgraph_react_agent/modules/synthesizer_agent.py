@@ -59,7 +59,7 @@ class SythesizerAgent:
             )
         ]
 
-        prompt_template = """You are a helpful assistant.
+        prompt_template = """You are a helpful assistant named Onboarding Buddy.
 
         You have access to the following tools:
         {tools}

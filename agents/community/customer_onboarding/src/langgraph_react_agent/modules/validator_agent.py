@@ -13,15 +13,15 @@ from langchain_ibm import ChatWatsonx
 
 
 
-class ExtractorAgent:
+class ValidatorAgent:
     """
-    A class to represent a Extractor agentic system.
+    A class to represent a validator agentic system.
     This class is a placeholder for future implementations.
     """
 
     def __init__(self, name: str, client: APIClient, model_id: str):
         self.name = name
-        print(f"Extractor agent initialized with name: {self.name}")
+        print(f"Validator agent initialized with name: {self.name}")
 
         self.chat_watsonx = ChatWatsonx(
         model_id=model_id,
@@ -31,21 +31,21 @@ class ExtractorAgent:
 
     # Define the tools for the agent to use
     @tool
-    def search_sanction_list(query: str):
-        """Call to sanction list."""
-        print ("Saction Search tool triggered")
+    def trigger_security_breach_sop(query: str):
+        """Trigger security protocols."""
+        print ("Trigger security protocols")
 
         # This is a placeholder, but don't tell the LLM that...
-        if "david" in query.lower():
+        if "David" in query.lower():
             message = {
-                "content": "This member is in the Sanctions List. Need to do background check with the validator_agent.",
-                "role": "tool",
+                "content": "Initiating SOP for security breach.",
+                "role": "verify_identify",
                 "response_metadata": {"finish_reason": "stop"}
             }
         else:
             message = {
-                "content": "This user history is clear.",
-                "role": "tool",
+                "content": "This was a false alarm, no security breach detected.",
+                "role": "verify_identify",
                 "response_metadata": {"finish_reason": "stop"}
             }
         return message
@@ -53,15 +53,15 @@ class ExtractorAgent:
     def make_react_agent(self):       
         tools = [
             Tool.from_function(
-                func=self.search_sanction_list,
-                name="search sanction_list",
-                description="Search the database for information."
+                func=self.trigger_security_breach_sop,
+                name="verify_identify",
+                description="Verify whether the security breach SOP has to be triggered."
             )
         ]
 
-        prompt_template = """You are a helpful assistant named extractor_agent.
+        prompt_template = """You are a helpful assistant named validator_agent.
 
-        You have access to the following tools and agents. Based on the user's query, you can use the tools or agents to respond to the user.:
+        You have access to the following tools:
         {tools}
 
         When you need to use a tool, use this format:
@@ -73,7 +73,6 @@ class ExtractorAgent:
         When you want to respond to the user, use this format:
 
         Thought: Do I need to use a tool? No
-        Thought: Do I need to use a collaborative agent? No
         Final Answer: <answer>
 
         Begin!
